@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería - Prototipo Inicial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <h1>Barbería & Co.</h1>
+        <nav>
+            <a href="#servicios">Servicios</a>
+            <a href="#reservar">Reservar</a>
+            <a href="#login">Acceso</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section id="servicios">
+            <h2>Catálogo de Servicios</h2>
+            <div class="card-grid">
+                <article class="card">
+                    <h3>Corte Clásico</h3>
+                    <p>Duración: 30 min</p>
+                    <p>Precio: $8.00</p>
+                </article>
+                <article class="card">
+                    <h3>Corte + Barba</h3>
+                    <p>Duración: 45 min</p>
+                    <p>Precio: $12.00</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="reservar" class="form-section">
+            <h2>Reservar Cita</h2>
+            <form id="reservaForm">
+                <label for="cliente">Nombre completo:</label>
+                <input type="text" id="cliente" required placeholder="Tu nombre">
+
+                <label for="servicio">Servicio:</label>
+                <select id="servicio" required>
+                    <option value="">Selecciona un servicio</option>
+                    <option value="1">Corte Clásico (30 min)</option>
+                    <option value="2">Corte + Barba (45 min)</option>
+                </select>
+
+                <label for="fecha">Fecha y hora de inicio:</label>
+                <input type="datetime-local" id="fecha" required>
+
+                <button type="submit">Confirmar Reserva</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>
