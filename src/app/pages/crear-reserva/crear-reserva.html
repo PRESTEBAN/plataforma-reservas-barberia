@@ -1,1 +1,99 @@
-<p>crear-reserva works!</p>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h3 class="fw-bold text-center mb-4 text-dark">Agendar Cita</h3>
+
+          <!-- Alertas de estado -->
+          <div *ngIf="mensajeExito" class="alert alert-success d-flex align-items-center mb-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <div>{{ mensajeExito }}</div>
+          </div>
+
+          <div *ngIf="mensajeError" class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>{{ mensajeError }}</div>
+          </div>
+
+          <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
+            <!-- Nombre del Cliente -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nombre Completo</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                formControlName="clienteNombre"
+                placeholder="Ej. Juan Pérez"
+                [ngClass]="{'is-invalid': reservaForm.get('clienteNombre')?.touched && reservaForm.get('clienteNombre')?.invalid}">
+              <div class="invalid-feedback">El nombre es obligatorio (mínimo 3 caracteres).</div>
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Correo Electrónico</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                formControlName="clienteEmail"
+                placeholder="juan@ejemplo.com"
+                [ngClass]="{'is-invalid': reservaForm.get('clienteEmail')?.touched && reservaForm.get('clienteEmail')?.invalid}">
+              <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+            </div>
+
+            <!-- Selección de Servicio -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Servicio</label>
+              <select 
+                class="form-select" 
+                formControlName="servicioId"
+                [ngClass]="{'is-invalid': reservaForm.get('servicioId')?.touched && reservaForm.get('servicioId')?.invalid}">
+                <option value="">-- Selecciona un Servicio --</option>
+                <option *ngFor="let s of servicios" [value]="s.id">
+                  {{ s.nombre }} ({{ s.duracionMinutos }} min) - ${{ s.precio.toFixed(2) }}
+                </option>
+              </select>
+              <div class="invalid-feedback">Selecciona un servicio del catálogo.</div>
+            </div>
+
+            <!-- Selección de Barbero (Recurso) -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Barbero (Recurso)</label>
+              <select 
+                class="form-select" 
+                formControlName="barberoId"
+                [ngClass]="{'is-invalid': reservaForm.get('barberoId')?.touched && reservaForm.get('barberoId')?.invalid}">
+                <option value="">-- Selecciona un Barbero --</option>
+                <option *ngFor="let b of barberos" [value]="b.id">
+                  {{ b.nombre }}
+                </option>
+              </select>
+              <div class="invalid-feedback">Debes elegir un barbero disponible.</div>
+            </div>
+
+            <!-- Fecha y Hora -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">Fecha y Hora de la Cita</label>
+              <input 
+                type="datetime-local" 
+                class="form-control" 
+                formControlName="fechaHora"
+                [ngClass]="{'is-invalid': reservaForm.get('fechaHora')?.touched && reservaForm.get('fechaHora')?.invalid}">
+              <div class="invalid-feedback">Selecciona la fecha y hora de atención.</div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-dark btn-lg fw-bold">
+                Confirmar Reserva
+              </button>
+              <a routerLink="/servicios" class="btn btn-outline-secondary">
+                Cancelar y Volver
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
