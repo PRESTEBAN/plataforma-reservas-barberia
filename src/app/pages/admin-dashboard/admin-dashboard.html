@@ -1,1 +1,70 @@
-<p>admin-dashboard works!</p>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+    <div>
+      <h3 class="fw-black text-uppercase m-0" style="color: #C6A66B; font-weight: 900; letter-spacing: 1.5px; text-shadow: 0 0 10px rgba(198,166,107,0.4);">
+        PANEL ADMINISTRATIVO TAURUS
+      </h3>
+      <p class="small text-uppercase fw-bold m-0" style="color: #F0E9DC; opacity: 0.8; letter-spacing: 0.5px;">
+        «Gestión general de barberos, servicios y citas»
+      </p>
+    </div>
+    <span class="badge px-3 py-2 text-uppercase" style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 800;">
+      MODO ADMINISTRADOR
+    </span>
+  </div>
+
+  <!-- Métricas Rápidas -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card p-3" style="background-color: #1a1a1a; border: 1px solid #C6A66B;">
+        <h6 class="text-uppercase fw-bold" style="color: #C6A66B;">Total Citas</h6>
+        <h2 class="fw-black m-0" style="color: #F0E9DC;">24</h2>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3" style="background-color: #1a1a1a; border: 1px solid #C6A66B;">
+        <h6 class="text-uppercase fw-bold" style="color: #C6A66B;">Barberos Activos</h6>
+        <h2 class="fw-black m-0" style="color: #F0E9DC;">4 (Efren, Edgardo, Julio, Carlos)</h2>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3" style="background-color: #1a1a1a; border: 1px solid #C6A66B;">
+        <h6 class="text-uppercase fw-bold" style="color: #C6A66B;">Servicios Activos</h6>
+        <h2 class="fw-black m-0" style="color: #F0E9DC;">3</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-4" style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px;">
+    <h5 class="fw-black text-uppercase mb-3" style="color: #C6A66B;">Últimas Reservas Registradas</h5>
+    <div class="table-responsive">
+      <table class="table table-dark align-middle m-0" style="background-color: #1a1a1a; color: #F0E9DC;">
+        <thead>
+          <tr class="text-uppercase border-bottom border-secondary" style="color: #C6A66B; font-size: 0.85rem;">
+            <th>Cliente</th>
+            <th>Servicio</th>
+            <th>Barbero</th>
+            <th>Fecha/Hora</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-bottom border-secondary">
+            <td>Juan Pérez</td>
+            <td>Corte TAURUS Urban</td>
+            <td><span class="badge text-uppercase" style="background-color: #111111; color: #C6A66B; border: 1px solid #C6A66B;">Efren</span></td>
+            <td>28/11/2026 - 10:00 AM</td>
+            <td><span class="badge bg-success">CONFIRMADA</span></td>
+          </tr>
+          <tr class="border-bottom border-secondary">
+            <td>Carlos Gómez</td>
+            <td>Corte + Barba Premium</td>
+            <td><span class="badge text-uppercase" style="background-color: #111111; color: #C6A66B; border: 1px solid #C6A66B;">Julio</span></td>
+            <td>28/11/2026 - 11:30 AM</td>
+            <td><span class="badge bg-success">CONFIRMADA</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

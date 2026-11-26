@@ -1,4 +1,81 @@
+/* Paleta Oficial BARBERÍA TAURUS - Urban Luxury */
+:root {
+  --taurus-negro: #111111;
+  --taurus-champagne: #C6A66B;
+  --taurus-marfil: #F0E9DC;
+  --taurus-grafito: #242424;
+  --taurus-grafito-hover: #2e2e2e;
+}
+
 body {
-  background-color: #f8f9fa;
+  background-color: var(--taurus-negro) !important;
+  color: var(--taurus-marfil) !important;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar Oscuro con Línea Champagne */
+.bg-taurus-negro {
+  background-color: var(--taurus-negro) !important;
+  border-bottom: 2px solid var(--taurus-champagne);
+}
+
+/* Textos y Acentos */
+.text-champagne {
+  color: var(--taurus-champagne) !important;
+}
+
+.text-marfil {
+  color: var(--taurus-marfil) !important;
+}
+
+/* Tarjetas Urban Luxury Legibles */
+.card-taurus {
+  background-color: var(--taurus-grafito) !important;
+  border: 1px solid rgba(198, 166, 107, 0.3) !important;
+  border-radius: 8px !important;
+  color: var(--taurus-marfil) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-taurus:hover {
+  background-color: var(--taurus-grafito-hover) !important;
+  border-color: var(--taurus-champagne) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(198, 166, 107, 0.2) !important;
+}
+
+/* Botón Champagne con Texto Negro Visible */
+.btn-champagne {
+  background-color: var(--taurus-champagne) !important;
+  color: #111111 !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(198, 166, 107, 0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-champagne:hover {
+  background-color: #cf9a37 !important;
+  color: #000000 !important;
+}
+
+.btn-outline-champagne {
+  border: 1px solid var(--taurus-champagne) !important;
+  color: var(--taurus-champagne) !important;
+  background-color: transparent !important;
+  font-weight: 600;
+}
+
+.btn-outline-champagne:hover {
+  background-color: var(--taurus-champagne) !important;
+  color: #111111 !important;
+}
+
+/* Divisor elegante */
+.divider-champagne {
+  height: 2px;
+  background-color: var(--taurus-champagne);
+  width: 80px;
+  margin: 1rem auto;
 }

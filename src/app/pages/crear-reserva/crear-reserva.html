@@ -1,94 +1,114 @@
 <div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
-      <div class="card shadow-sm border-0">
+      <div class="card p-2 shadow-lg" 
+           style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px; box-shadow: 0 0 25px rgba(198, 166, 107, 0.25);">
         <div class="card-body p-4">
-          <h3 class="fw-bold text-center mb-4 text-dark">Agendar Cita</h3>
+          
+          <div class="text-center mb-4">
+            <span class="badge px-3 py-2 text-uppercase mb-2" style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 800; letter-spacing: 1.5px;">
+              BARBERÍA TAURUS
+            </span>
+            <h3 class="fw-black text-uppercase m-0" style="color: #C6A66B; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 10px rgba(198,166,107,0.5);">
+              AGENDAR CITA
+            </h3>
+            <p class="small text-uppercase fw-bold mt-1 mb-0" style="color: #F0E9DC; opacity: 0.8; letter-spacing: 0.5px;">
+              «Selecciona tu servicio y al pana que te atenderá»
+            </p>
+          </div>
 
-          <!-- Alertas de estado -->
-          <div *ngIf="mensajeExito" class="alert alert-success d-flex align-items-center mb-3" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
+          <!-- Alertas -->
+          <div *ngIf="mensajeExito" class="alert d-flex align-items-center mb-3" role="alert" 
+               style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 700;">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
             <div>{{ mensajeExito }}</div>
           </div>
 
-          <div *ngIf="mensajeError" class="alert alert-danger d-flex align-items-center mb-3" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <div *ngIf="mensajeError" class="alert d-flex align-items-center mb-3" role="alert" 
+               style="background-color: #242424; color: #ff6b6b; border: 1px solid #ff6b6b; font-weight: 700;">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
             <div>{{ mensajeError }}</div>
           </div>
 
           <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
-            <!-- Nombre del Cliente -->
+            <!-- Cliente -->
             <div class="mb-3">
-              <label class="form-label fw-bold">Nombre Completo</label>
+              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Tu Nombre Completo</label>
               <input 
                 type="text" 
-                class="form-control" 
+                class="form-control form-control-lg text-white border-secondary" 
+                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
                 formControlName="clienteNombre"
                 placeholder="Ej. Juan Pérez"
                 [ngClass]="{'is-invalid': reservaForm.get('clienteNombre')?.touched && reservaForm.get('clienteNombre')?.invalid}">
-              <div class="invalid-feedback">El nombre es obligatorio (mínimo 3 caracteres).</div>
+              <div class="invalid-feedback text-danger fw-bold">Indícanos tu nombre completo, mi pana.</div>
             </div>
 
-            <!-- Correo Electrónico -->
+            <!-- Email -->
             <div class="mb-3">
-              <label class="form-label fw-bold">Correo Electrónico</label>
+              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Correo Electrónico</label>
               <input 
                 type="email" 
-                class="form-control" 
+                class="form-control form-control-lg text-white border-secondary" 
+                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
                 formControlName="clienteEmail"
                 placeholder="juan@ejemplo.com"
                 [ngClass]="{'is-invalid': reservaForm.get('clienteEmail')?.touched && reservaForm.get('clienteEmail')?.invalid}">
-              <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+              <div class="invalid-feedback text-danger fw-bold">Ingresa un correo electrónico válido.</div>
             </div>
 
-            <!-- Selección de Servicio -->
+            <!-- Servicio -->
             <div class="mb-3">
-              <label class="form-label fw-bold">Servicio</label>
+              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Servicio</label>
               <select 
-                class="form-select" 
+                class="form-select form-select-lg border-secondary" 
+                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
                 formControlName="servicioId"
                 [ngClass]="{'is-invalid': reservaForm.get('servicioId')?.touched && reservaForm.get('servicioId')?.invalid}">
-                <option value="">-- Selecciona un Servicio --</option>
-                <option *ngFor="let s of servicios" [value]="s.id">
+                <option value="" style="background-color: #1a1a1a;">-- Elige el servicio --</option>
+                <option *ngFor="let s of servicios" [value]="s.id" style="background-color: #1a1a1a;">
                   {{ s.nombre }} ({{ s.duracionMinutos }} min) - ${{ s.precio.toFixed(2) }}
                 </option>
               </select>
-              <div class="invalid-feedback">Selecciona un servicio del catálogo.</div>
+              <div class="invalid-feedback text-danger fw-bold">Selecciona un servicio del catálogo.</div>
             </div>
 
-            <!-- Selección de Barbero (Recurso) -->
+            <!-- Barbero -->
             <div class="mb-3">
-              <label class="form-label fw-bold">Barbero (Recurso)</label>
+              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Barbero de Confianza</label>
               <select 
-                class="form-select" 
+                class="form-select form-select-lg border-secondary" 
+                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
                 formControlName="barberoId"
                 [ngClass]="{'is-invalid': reservaForm.get('barberoId')?.touched && reservaForm.get('barberoId')?.invalid}">
-                <option value="">-- Selecciona un Barbero --</option>
-                <option *ngFor="let b of barberos" [value]="b.id">
+                <option value="" style="background-color: #1a1a1a;">-- Selecciona al pana que te atenderá --</option>
+                <option *ngFor="let b of barberos" [value]="b.id" style="background-color: #1a1a1a;">
                   {{ b.nombre }}
                 </option>
               </select>
-              <div class="invalid-feedback">Debes elegir un barbero disponible.</div>
+              <div class="invalid-feedback text-danger fw-bold">Selecciona a uno de nuestros barberos oficiales.</div>
             </div>
 
-            <!-- Fecha y Hora -->
+            <!-- Fecha Hora -->
             <div class="mb-4">
-              <label class="form-label fw-bold">Fecha y Hora de la Cita</label>
+              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Fecha y Hora</label>
               <input 
                 type="datetime-local" 
-                class="form-control" 
+                class="form-control form-control-lg border-secondary" 
+                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
                 formControlName="fechaHora"
                 [ngClass]="{'is-invalid': reservaForm.get('fechaHora')?.touched && reservaForm.get('fechaHora')?.invalid}">
-              <div class="invalid-feedback">Selecciona la fecha y hora de atención.</div>
+              <div class="invalid-feedback text-danger fw-bold">Selecciona la fecha y hora de tu cita.</div>
             </div>
 
-            <!-- Botones de Acción -->
+            <!-- Botones -->
             <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-dark btn-lg fw-bold">
-                Confirmar Reserva
+              <button type="submit" class="btn btn-lg fw-black text-uppercase py-3" 
+                      style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(198,166,107,0.3);">
+                <i class="bi bi-calendar-check-fill me-2"></i>CONFIRMAR RESERVA
               </button>
-              <a routerLink="/servicios" class="btn btn-outline-secondary">
-                Cancelar y Volver
+              <a routerLink="/servicios" class="btn btn-outline-light text-uppercase fw-bold py-2" style="border: 1px solid #C6A66B; color: #C6A66B;">
+                CANCELAR Y VOLVER
               </a>
             </div>
           </form>

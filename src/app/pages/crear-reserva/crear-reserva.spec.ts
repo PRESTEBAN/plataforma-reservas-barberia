@@ -1,19 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { provideRouter } from '@angular/router';
+import { CrearReservaComponent } from './crear-reserva';
 
-import { CrearReserva } from './crear-reserva';
-
-describe('CrearReserva', () => {
-  let component: CrearReserva;
-  let fixture: ComponentFixture<CrearReserva>;
+describe('CrearReservaComponent', () => {
+  let component: CrearReservaComponent;
+  let fixture: ComponentFixture<CrearReservaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CrearReserva],
-    }).compileComponents();
+      imports: [CrearReservaComponent, ReactiveFormsModule],
+      providers: [provideRouter([])]
+    })
+    .compileComponents();
 
-    fixture = TestBed.createComponent(CrearReserva);
+    fixture = TestBed.createComponent(CrearReservaComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

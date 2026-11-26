@@ -1,26 +1,75 @@
 <div class="container py-4">
-  <div class="text-center mb-5">
-    <h2 class="fw-bold display-6">Nuestros Servicios</h2>
-    <p class="text-muted">Elige el servicio de tu preferencia y agenda tu cita en pocos pasos.</p>
+  <!-- Banner Principal enfocado en la marca TAURUS -->
+  <div class="text-center my-4 py-4 px-3 rounded-3 shadow-lg" 
+       style="background: linear-gradient(180deg, #1f1f1f 0%, #111111 100%); border: 2px solid #C6A66B; box-shadow: 0 0 30px rgba(198, 166, 107, 0.25);">
+    
+    <span class="badge px-3 py-2 text-uppercase mb-2" style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 800; letter-spacing: 2px;">
+      URBAN LUXURY BARBERSHOP
+    </span>
+
+    <!-- Nombre Oficial destacado -->
+    <h1 class="fw-black display-3 text-uppercase mb-2" 
+        style="color: #C6A66B; font-weight: 900; text-shadow: 0 0 20px rgba(198, 166, 107, 0.6); letter-spacing: 3px;">
+      BARBERÍA TAURUS
+    </h1>
+
+    <h3 class="fw-black text-uppercase mb-2" style="color: #F0E9DC; font-weight: 800; letter-spacing: 1px;">
+      ¡AQUÍ SE VIENE A SALIR FINO!
+    </h3>
+
+    <p class="fs-5 text-uppercase fw-bold m-0 opacity-75" style="color: #F0E9DC; letter-spacing: 1px;">
+      «Tu próximo estilo comienza aquí, mi pana»
+    </p>
   </div>
 
-  <div class="row g-4">
+  <!-- Catálogo de Servicios -->
+  <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary pb-2">
+    <h3 class="fw-black text-uppercase m-0" style="color: #C6A66B; font-weight: 800; letter-spacing: 1px;">
+      <i class="bi bi-scissors me-2"></i>CATÁLOGO DE SERVICIOS
+    </h3>
+    <span class="badge rounded-pill px-3 py-2" style="background-color: #242424; color: #F0E9DC; border: 1px solid #C6A66B;">FASE 1 - ONLINE</span>
+  </div>
+
+  <div class="row g-4 mb-5">
     <div class="col-md-4" *ngFor="let servicio of servicios">
-      <div class="card h-100 shadow-sm border-0">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title fw-bold text-dark">{{ servicio.nombre }}</h5>
-          <p class="card-text text-muted flex-grow-1">{{ servicio.descripcion }}</p>
+      <div class="card h-100 p-2 shadow-lg" 
+           style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px; transition: transform 0.3s ease, box-shadow 0.3s ease;" 
+           onmouseover="this.style.boxShadow='0 0 20px rgba(198, 166, 107, 0.5)'; this.style.transform='translateY(-5px)';" 
+           onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0)';">
+        <div class="card-body d-flex flex-column p-4">
+          <h5 class="card-title fw-black text-uppercase fs-4 mb-2" style="color: #C6A66B; font-weight: 900;">{{ servicio.nombre }}</h5>
+          <p class="card-text flex-grow-1 opacity-75 my-3" style="color: #F0E9DC; font-size: 0.95rem; line-height: 1.5;">{{ servicio.descripcion }}</p>
           
-          <div class="d-flex justify-content-between align-items-center my-3">
-            <span class="badge bg-secondary">
-              {{ servicio.duracionMinutos }} min
+          <div class="d-flex justify-content-between align-items-center my-3 pt-3 border-top border-secondary">
+            <span class="badge px-3 py-2 text-uppercase" style="background-color: #111111; color: #F0E9DC; border: 1px solid #C6A66B; font-weight: 700;">
+              <i class="bi bi-clock me-1" style="color: #C6A66B;"></i>{{ servicio.duracionMinutos }} MIN
             </span>
-            <span class="fs-4 fw-bold text-success">${{ servicio.precio.toFixed(2) }}</span>
+            <span class="fs-3 fw-black" style="color: #C6A66B; font-weight: 900; text-shadow: 0 0 8px rgba(198,166,107,0.4);">${{ servicio.precio.toFixed(2) }}</span>
           </div>
 
-          <a [routerLink]="['/reservar']" [queryParams]="{ servicioId: servicio.id }" class="btn btn-dark w-100 fw-bold">
-            Reservar Este Servicio
+          <a [routerLink]="['/reservar']" [queryParams]="{ servicioId: servicio.id }" 
+             class="btn btn-lg w-100 fw-black text-uppercase py-2" 
+             style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(198,166,107,0.3);">
+            <i class="bi bi-calendar-check-fill me-2"></i>RESERVAR ESTE SERVICIO
           </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barberos Oficiales (Efren, Edgardo, Julio, Carlos) -->
+  <div class="mt-5 pt-3">
+    <h3 class="fw-black text-uppercase mb-4" style="color: #C6A66B; font-weight: 800; letter-spacing: 1px;">
+      <i class="bi bi-fire me-2"></i>BARBEROS DE LA CASA
+    </h3>
+    <div class="row g-3">
+      <div class="col-md-3" *ngFor="let barbero of barberos">
+        <div class="card text-center p-3 shadow" style="background-color: #242424; border: 1px solid rgba(198, 166, 107, 0.4); border-radius: 10px;">
+          <div class="card-body">
+            <i class="bi bi-person-badge-fill display-4 d-block mb-2" style="color: #C6A66B; text-shadow: 0 0 10px rgba(198,166,107,0.4);"></i>
+            <h5 class="fw-black text-uppercase mb-1" style="color: #F0E9DC; font-weight: 800;">{{ barbero.nombre }}</h5>
+            <p class="small text-uppercase fw-bold mb-0" style="color: #C6A66B; font-size: 0.75rem; letter-spacing: 0.5px;">{{ barbero.especialidad }}</p>
+          </div>
         </div>
       </div>
     </div>

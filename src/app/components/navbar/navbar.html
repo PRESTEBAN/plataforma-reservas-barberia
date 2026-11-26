@@ -1,28 +1,46 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-lg sticky-top" style="background-color: #0b0b0b; border-bottom: 2px solid #C6A66B; box-shadow: 0 4px 20px rgba(198, 166, 107, 0.25);">
   <div class="container">
-    <a class="navbar-brand fw-bold text-warning" routerLink="/servicios">
-      Barbería & Co.
+    <!-- Logo de la marca con resplandor dorado -->
+    <a class="navbar-brand fw-black fs-2 text-uppercase d-flex align-items-center" routerLink="/servicios" 
+       style="color: #C6A66B; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 15px rgba(198,166,107,0.8);">
+      <i class="bi bi-scissors me-2" style="font-size: 1.8rem; color: #C6A66B;"></i>BARBERÍA TAURUS
     </a>
     
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <!-- Opciones del menú con tipografía clara y resaltado al estar activo -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-uppercase fw-bold ms-lg-4" style="font-size: 0.95rem; letter-spacing: 1px;">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/servicios" routerLinkActive="active">Catálogo</a>
+          <a class="nav-link px-3" routerLink="/servicios" routerLinkActive="active" 
+             style="color: #F0E9DC;" onmouseover="this.style.color='#C6A66B'" onmouseout="if(!this.classList.contains('active')) this.style.color='#F0E9DC'">Servicios</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/reservar" routerLinkActive="active">Reservar Cita</a>
+          <a class="nav-link px-3" routerLink="/reservar" routerLinkActive="active" 
+             style="color: #F0E9DC;" onmouseover="this.style.color='#C6A66B'" onmouseout="if(!this.classList.contains('active')) this.style.color='#F0E9DC'">Reservar Cita</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/mis-reservas" routerLinkActive="active">Mis Reservas</a>
+          <a class="nav-link px-3" routerLink="/mis-reservas" routerLinkActive="active" 
+             style="color: #F0E9DC;" onmouseover="this.style.color='#C6A66B'" onmouseout="if(!this.classList.contains('active')) this.style.color='#F0E9DC'">Mis Reservas</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-warning" routerLink="/admin" routerLinkActive="active">Panel Admin</a>
+          <a class="nav-link px-3 fw-bold" routerLink="/admin" routerLinkActive="active" 
+             style="color: #C6A66B; text-shadow: 0 0 8px rgba(198,166,107,0.4);">Panel Admin</a>
         </li>
       </ul>
 
+      <!-- Botones de Acción con Contraste Champagne -->
       <div class="d-flex gap-2">
-        <a routerLink="/login" class="btn btn-outline-light btn-sm">Iniciar Sesión</a>
-        <a routerLink="/registro" class="btn btn-warning btn-sm fw-bold">Registrarse</a>
+        <a routerLink="/login" class="btn btn-sm fw-black text-uppercase px-3 py-2" 
+           style="border: 2px solid #C6A66B; color: #C6A66B; background: transparent; font-weight: 800; letter-spacing: 0.5px;">
+           Iniciar Sesión
+        </a>
+        <a routerLink="/registro" class="btn btn-sm fw-black text-uppercase px-3 py-2" 
+           style="background-color: #C6A66B; color: #111111; border: none; font-weight: 900; letter-spacing: 0.5px; box-shadow: 0 0 12px rgba(198, 166, 107, 0.5);">
+           Registrarse
+        </a>
       </div>
     </div>
   </div>

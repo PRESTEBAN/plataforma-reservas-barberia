@@ -15,16 +15,18 @@ export class CrearReservaComponent implements OnInit {
   mensajeExito: string = '';
   mensajeError: string = '';
 
-  // Datos temporales de prueba para la interfaz
   servicios = [
-    { id: '1', nombre: 'Corte Tradicional', duracionMinutos: 30, precio: 8.00 },
-    { id: '2', nombre: 'Corte + Perfilado de Barba', duracionMinutos: 45, precio: 12.00 },
-    { id: '3', nombre: 'Barba Express', duracionMinutos: 20, precio: 5.00 }
+    { id: '1', nombre: 'Corte TAURUS al Pelito', duracionMinutos: 30, precio: 8.00 },
+    { id: '2', nombre: 'Corte + Barba de Caballero', duracionMinutos: 45, precio: 12.00 },
+    { id: '3', nombre: 'Perfilado de Barba Express', duracionMinutos: 20, precio: 5.00 }
   ];
 
+  // Los 4 barberos reales de BARBERÍA TAURUS
   barberos = [
-    { id: 'b1', nombre: 'Carlos (Barbero Principal)', activo: true },
-    { id: 'b2', nombre: 'Mateo (Especialista en Barba)', activo: true }
+    { id: 'b1', nombre: 'Efren (Master Fade)', activo: true },
+    { id: 'b2', nombre: 'Edgardo (Estilos Clásicos)', activo: true },
+    { id: 'b3', nombre: 'Julio (Perfilado de Barba)', activo: true },
+    { id: 'b4', nombre: 'Carlos (Tratamientos)', activo: true }
   ];
 
   constructor(
@@ -34,7 +36,6 @@ export class CrearReservaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Inicializamos el formulario reactivo con sus validaciones
     this.reservaForm = this.fb.group({
       clienteNombre: ['', [Validators.required, Validators.minLength(3)]],
       clienteEmail: ['', [Validators.required, Validators.email]],
@@ -43,7 +44,6 @@ export class CrearReservaComponent implements OnInit {
       fechaHora: ['', [Validators.required]]
     });
 
-    // Si el usuario viene desde el botón "Reservar Este Servicio" del catálogo, seleccionamos el servicio automáticamente
     this.route.queryParams.subscribe(params => {
       if (params['servicioId']) {
         this.reservaForm.patchValue({ servicioId: params['servicioId'] });
@@ -51,22 +51,20 @@ export class CrearReservaComponent implements OnInit {
     });
   }
 
-  // Método que procesa el envío del formulario
   onSubmit(): void {
     this.mensajeExito = '';
     this.mensajeError = '';
 
     if (this.reservaForm.invalid) {
       this.reservaForm.markAllAsTouched();
-      this.mensajeError = 'Por favor, completa todos los campos requeridos correctamente.';
+      this.mensajeError = 'Por favor, llena todos los campos, mi pana.';
       return;
     }
 
     const datosReserva = this.reservaForm.value;
-    console.log('Datos de la reserva a guardar:', datosReserva);
+    console.log('Reserva registrada en TAURUS:', datosReserva);
 
-    // Simulación de respuesta exitosa (aquí conectaremos el servicio de Esteban)
-    this.mensajeExito = '¡Reserva confirmada con éxito! Redirigiendo a tus reservas...';
+    this.mensajeExito = '¡Listo, mi pana! Tu cita fue reservada con éxito. Vamos a dejar ese corte al pelo.';
     
     setTimeout(() => {
       this.router.navigate(['/mis-reservas']);

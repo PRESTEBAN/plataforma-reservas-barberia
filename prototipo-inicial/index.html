@@ -3,47 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbería - Prototipo Inicial</title>
+    <title>Barbería TAURUS - Prototipo Inicial</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="navbar">
-        <h1>Barbería & Co.</h1>
+        <h1>BARBERÍA TAURUS</h1>
         <nav>
             <a href="#servicios">Servicios</a>
-            <a href="#reservar">Reservar</a>
+            <a href="#barberos">Nuestros Barberos</a>
+            <a href="#reservar">Reservar Cita</a>
             <a href="#login">Acceso</a>
         </nav>
     </header>
 
     <main class="container">
         <section id="servicios">
-            <h2>Catálogo de Servicios</h2>
+            <h2>¡Saldrás fino! Nuestros Servicios</h2>
             <div class="card-grid">
                 <article class="card">
-                    <h3>Corte Clásico</h3>
+                    <h3>Corte TAURUS al Pelito</h3>
                     <p>Duración: 30 min</p>
-                    <p>Precio: $8.00</p>
+                    <p class="precio">$8.00</p>
                 </article>
                 <article class="card">
-                    <h3>Corte + Barba</h3>
+                    <h3>Corte + Barba de Caballero</h3>
                     <p>Duración: 45 min</p>
-                    <p>Precio: $12.00</p>
+                    <p class="precio">$12.00</p>
                 </article>
             </div>
         </section>
 
         <section id="reservar" class="form-section">
-            <h2>Reservar Cita</h2>
+            <h2>¡Tu próximo estilo comienza aquí, mi pana!</h2>
             <form id="reservaForm">
                 <label for="cliente">Nombre completo:</label>
-                <input type="text" id="cliente" required placeholder="Tu nombre">
+                <input type="text" id="cliente" required placeholder="Tu nombre, mi pana">
 
                 <label for="servicio">Servicio:</label>
                 <select id="servicio" required>
                     <option value="">Selecciona un servicio</option>
-                    <option value="1">Corte Clásico (30 min)</option>
-                    <option value="2">Corte + Barba (45 min)</option>
+                    <option value="1">Corte TAURUS al Pelito (30 min)</option>
+                    <option value="2">Corte + Barba de Caballero (45 min)</option>
+                </select>
+
+                <label for="barbero">Elige tu barbero de confianza:</label>
+                <select id="barbero" required>
+                    <option value="">Selecciona al pana que te atenderá</option>
+                    <option value="b1">Efren</option>
+                    <option value="b2">Edgardo</option>
+                    <option value="b3">Julio</option>
+                    <option value="b4">Carlos</option>
                 </select>
 
                 <label for="fecha">Fecha y hora de inicio:</label>

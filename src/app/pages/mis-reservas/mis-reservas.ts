@@ -21,20 +21,19 @@ interface Reserva {
 export class MisReservasComponent implements OnInit {
   mensajeAlerta: string = '';
 
-  // Datos simulados de reservas para la vista del cliente
   reservas: Reserva[] = [
     {
       id: 'res-101',
-      servicioNombre: 'Corte Tradicional',
-      barberoNombre: 'Carlos (Barbero Principal)',
+      servicioNombre: 'Corte TAURUS al Pelito',
+      barberoNombre: 'Efren',
       fechaHora: '2026-11-28T10:00',
       precio: 8.00,
       estado: 'CONFIRMADA'
     },
     {
       id: 'res-102',
-      servicioNombre: 'Corte + Perfilado de Barba',
-      barberoNombre: 'Mateo (Especialista en Barba)',
+      servicioNombre: 'Corte + Barba de Caballero',
+      barberoNombre: 'Julio',
       fechaHora: '2026-11-20T15:30',
       precio: 12.00,
       estado: 'ATENDIDA'
@@ -43,13 +42,12 @@ export class MisReservasComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  // Permite al cliente cancelar una reserva futura confirmada
   cancelarReserva(id: string): void {
     const reserva = this.reservas.find(r => r.id === id);
     if (reserva && reserva.estado === 'CONFIRMADA') {
-      if (confirm('¿Estás seguro de que deseas cancelar esta cita?')) {
+      if (confirm('¿Estás seguro de que deseas cancelar tu cita en TAURUS, mi pana?')) {
         reserva.estado = 'CANCELADA';
-        this.mensajeAlerta = `La reserva de "${reserva.servicioNombre}" ha sido cancelada correctamente.`;
+        this.mensajeAlerta = `La reserva de "${reserva.servicioNombre}" ha sido cancelada.`;
       }
     }
   }
