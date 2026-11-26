@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-warning" routerLink="/servicios">
+      Barbería & Co.
+    </a>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/servicios" routerLinkActive="active">Catálogo</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/reservar" routerLinkActive="active">Reservar Cita</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/mis-reservas" routerLinkActive="active">Mis Reservas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-warning" routerLink="/admin" routerLinkActive="active">Panel Admin</a>
+        </li>
+      </ul>
+
+      <div class="d-flex gap-2">
+        <a routerLink="/login" class="btn btn-outline-light btn-sm">Iniciar Sesión</a>
+        <a routerLink="/registro" class="btn btn-warning btn-sm fw-bold">Registrarse</a>
+      </div>
+    </div>
+  </div>
+</nav>
