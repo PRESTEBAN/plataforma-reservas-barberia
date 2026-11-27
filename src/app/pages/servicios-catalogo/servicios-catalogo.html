@@ -1,5 +1,5 @@
 <div class="container py-4">
-  <!-- Banner Principal enfocado en la marca TAURUS -->
+  <!-- Banner Principal de Barbería TAURUS -->
   <div class="text-center my-4 py-4 px-3 rounded-3 shadow-lg" 
        style="background: linear-gradient(180deg, #1f1f1f 0%, #111111 100%); border: 2px solid #C6A66B; box-shadow: 0 0 30px rgba(198, 166, 107, 0.25);">
     
@@ -7,7 +7,6 @@
       URBAN LUXURY BARBERSHOP
     </span>
 
-    <!-- Nombre Oficial destacado -->
     <h1 class="fw-black display-3 text-uppercase mb-2" 
         style="color: #C6A66B; font-weight: 900; text-shadow: 0 0 20px rgba(198, 166, 107, 0.6); letter-spacing: 3px;">
       BARBERÍA TAURUS
@@ -22,15 +21,23 @@
     </p>
   </div>
 
-  <!-- Catálogo de Servicios -->
+  <!-- Encabezado de Catálogo -->
   <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary pb-2">
     <h3 class="fw-black text-uppercase m-0" style="color: #C6A66B; font-weight: 800; letter-spacing: 1px;">
       <i class="bi bi-scissors me-2"></i>CATÁLOGO DE SERVICIOS
     </h3>
-    <span class="badge rounded-pill px-3 py-2" style="background-color: #242424; color: #F0E9DC; border: 1px solid #C6A66B;">FASE 1 - ONLINE</span>
+    <span class="badge rounded-pill px-3 py-2" style="background-color: #242424; color: #F0E9DC; border: 1px solid #C6A66B;">FASE 1 - FIRESTORE</span>
   </div>
 
-  <div class="row g-4 mb-5">
+  <!-- Spinner de Carga -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border text-warning" role="status">
+      <span class="visually-hidden">Cargando catálogo...</span>
+    </div>
+  </div>
+
+  <!-- Lista de Servicios desde Firestore -->
+  <div *ngIf="!cargando" class="row g-4 mb-5">
     <div class="col-md-4" *ngFor="let servicio of servicios">
       <div class="card h-100 p-2 shadow-lg" 
            style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px; transition: transform 0.3s ease, box-shadow 0.3s ease;" 
@@ -47,6 +54,7 @@
             <span class="fs-3 fw-black" style="color: #C6A66B; font-weight: 900; text-shadow: 0 0 8px rgba(198,166,107,0.4);">${{ servicio.precio.toFixed(2) }}</span>
           </div>
 
+          <!-- Botón de Reserva enviando el id real del servicio -->
           <a [routerLink]="['/reservar']" [queryParams]="{ servicioId: servicio.id }" 
              class="btn btn-lg w-100 fw-black text-uppercase py-2" 
              style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(198,166,107,0.3);">
@@ -57,8 +65,8 @@
     </div>
   </div>
 
-  <!-- Barberos Oficiales (Efren, Edgardo, Julio, Carlos) -->
-  <div class="mt-5 pt-3">
+  <!-- Sección de Barberos Oficiales -->
+  <div class="mt-5 pt-3" *ngIf="!cargando">
     <h3 class="fw-black text-uppercase mb-4" style="color: #C6A66B; font-weight: 800; letter-spacing: 1px;">
       <i class="bi bi-fire me-2"></i>BARBEROS DE LA CASA
     </h3>

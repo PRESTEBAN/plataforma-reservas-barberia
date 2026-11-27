@@ -13,11 +13,11 @@
               AGENDAR CITA
             </h3>
             <p class="small text-uppercase fw-bold mt-1 mb-0" style="color: #F0E9DC; opacity: 0.8; letter-spacing: 0.5px;">
-              «Selecciona tu servicio y al pana que te atenderá»
+              «Selecciona tu servicio y a tu barbero de confianza»
             </p>
           </div>
 
-          <!-- Alertas -->
+          <!-- Mensajes dinámicos de Firebase -->
           <div *ngIf="mensajeExito" class="alert d-flex align-items-center mb-3" role="alert" 
                style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 700;">
             <i class="bi bi-check-circle-fill me-2 fs-5"></i>
@@ -31,32 +31,6 @@
           </div>
 
           <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
-            <!-- Cliente -->
-            <div class="mb-3">
-              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Tu Nombre Completo</label>
-              <input 
-                type="text" 
-                class="form-control form-control-lg text-white border-secondary" 
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
-                formControlName="clienteNombre"
-                placeholder="Ej. Juan Pérez"
-                [ngClass]="{'is-invalid': reservaForm.get('clienteNombre')?.touched && reservaForm.get('clienteNombre')?.invalid}">
-              <div class="invalid-feedback text-danger fw-bold">Indícanos tu nombre completo, mi pana.</div>
-            </div>
-
-            <!-- Email -->
-            <div class="mb-3">
-              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Correo Electrónico</label>
-              <input 
-                type="email" 
-                class="form-control form-control-lg text-white border-secondary" 
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
-                formControlName="clienteEmail"
-                placeholder="juan@ejemplo.com"
-                [ngClass]="{'is-invalid': reservaForm.get('clienteEmail')?.touched && reservaForm.get('clienteEmail')?.invalid}">
-              <div class="invalid-feedback text-danger fw-bold">Ingresa un correo electrónico válido.</div>
-            </div>
-
             <!-- Servicio -->
             <div class="mb-3">
               <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Servicio</label>
@@ -86,9 +60,10 @@
                   {{ b.nombre }}
                 </option>
               </select>
-              <div class="invalid-feedback text-danger fw-bold">Selecciona a uno de nuestros barberos oficiales.</div>
+              <div class="invalid-feedback text-danger fw-bold">Selecciona a uno de nuestros barberos.</div>
             </div>
-            <!-- Fecha y Hora con restricción de pasado -->
+
+            <!-- Fecha y Hora -->
             <div class="mb-4">
               <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Fecha y Hora</label>
               <input 
@@ -98,14 +73,13 @@
                 formControlName="fechaHora"
                 [min]="fechaMinima"
                 [ngClass]="{'is-invalid': reservaForm.get('fechaHora')?.touched && reservaForm.get('fechaHora')?.invalid}">
-              <div class="invalid-feedback text-danger fw-bold">Selecciona una fecha y hora futura.</div>
+              <div class="invalid-feedback text-danger fw-bold">Selecciona una fecha y hora de atención.</div>
             </div>
 
-            <!-- Botones -->
             <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-lg fw-black text-uppercase py-3" 
-                      style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(198,166,107,0.3);">
-                <i class="bi bi-calendar-check-fill me-2"></i>CONFIRMAR RESERVA
+              <button type="submit" [disabled]="cargando" class="btn btn-lg fw-black text-uppercase py-3" 
+                      style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
+                <i class="bi bi-calendar-check-fill me-2"></i>{{ cargando ? 'PROCESANDO...' : 'CONFIRMAR RESERVA' }}
               </button>
               <a routerLink="/servicios" class="btn btn-outline-light text-uppercase fw-bold py-2" style="border: 1px solid #C6A66B; color: #C6A66B;">
                 CANCELAR Y VOLVER

@@ -1,15 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
-interface Reserva {
-  id: string;
-  servicioNombre: string;
-  barberoNombre: string;
-  fechaHora: string;
-  precio: number;
-  estado: 'CONFIRMADA' | 'CANCELADA' | 'ATENDIDA';
-}
+import { ReservaService } from '../../services/reserva.service';
 
 @Component({
   selector: 'app-mis-reservas',
@@ -19,35 +11,41 @@ interface Reserva {
   styleUrl: './mis-reservas.css'
 })
 export class MisReservasComponent implements OnInit {
+  reservas: any[] = [];
   mensajeAlerta: string = '';
+  cargando: boolean = true;
 
-  reservas: Reserva[] = [
-    {
-      id: 'res-101',
-      servicioNombre: 'Corte TAURUS al Pelito',
-      barberoNombre: 'Efren',
-      fechaHora: '2026-11-28T10:00',
-      precio: 8.00,
-      estado: 'CONFIRMADA'
-    },
-    {
-      id: 'res-102',
-      servicioNombre: 'Corte + Barba de Caballero',
-      barberoNombre: 'Julio',
-      fechaHora: '2026-11-20T15:30',
-      precio: 12.00,
-      estado: 'ATENDIDA'
+  constructor(
+    private reservaService: ReservaService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.cargarReservas();
+  }
+
+  async cargarReservas(): Promise<void> {
+    this.cargando = true;
+    try {
+      this.reservas = await this.reservaService.listarMisReservas();
+      this.cargando = false;
+      this.cdr.markForCheck();
+    } catch (e: any) {
+      this.mensajeAlerta = e.message || 'Error al cargar tus reservas.';
+      this.cargando = false;
+      this.cdr.markForCheck();
     }
-  ];
+  }
 
-  ngOnInit(): void {}
-
-  cancelarReserva(id: string): void {
-    const reserva = this.reservas.find(r => r.id === id);
-    if (reserva && reserva.estado === 'CONFIRMADA') {
-      if (confirm('¿Estás seguro de que deseas cancelar tu cita en TAURUS, mi pana?')) {
-        reserva.estado = 'CANCELADA';
-        this.mensajeAlerta = `La reserva de "${reserva.servicioNombre}" ha sido cancelada.`;
+  async cancelarReserva(id: string): Promise<void> {
+    if (confirm('¿Estás seguro de que deseas cancelar tu cita en TAURUS, mi pana?')) {
+      try {
+        await this.reservaService.cancelarReserva(id);
+        this.mensajeAlerta = 'La reserva ha sido cancelada exitosamente.';
+        await this.cargarReservas();
+      } catch (e: any) {
+        this.mensajeAlerta = e.message || 'No se pudo cancelar la reserva.';
+        this.cdr.markForCheck();
       }
     }
   }
