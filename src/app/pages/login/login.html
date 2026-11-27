@@ -13,18 +13,38 @@
             INICIAR SESIÓN
           </h3>
 
-          <form>
+          <div *ngIf="mensajeError" class="alert d-flex align-items-center mb-3 text-start" role="alert" 
+               style="background-color: #242424; color: #ff6b6b; border: 1px solid #ff6b6b; font-weight: 700; font-size: 0.85rem;">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+            <div>{{ mensajeError }}</div>
+          </div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <div class="mb-3 text-start">
               <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Correo Electrónico</label>
-              <input type="email" class="form-control form-control-lg" style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" placeholder="usuario@taurus.com">
+              <input 
+                type="email" 
+                class="form-control form-control-lg" 
+                style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" 
+                placeholder="usuario@taurus.com"
+                formControlName="email"
+                [ngClass]="{'is-invalid': loginForm.get('email')?.touched && loginForm.get('email')?.invalid}">
+              <div class="invalid-feedback text-danger fw-bold">Ingresa un correo electrónico válido.</div>
             </div>
 
             <div class="mb-4 text-start">
               <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Contraseña</label>
-              <input type="password" class="form-control form-control-lg" style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" placeholder="••••••••">
+              <input 
+                type="password" 
+                class="form-control form-control-lg" 
+                style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" 
+                placeholder="••••••••"
+                formControlName="password"
+                [ngClass]="{'is-invalid': loginForm.get('password')?.touched && loginForm.get('password')?.invalid}">
+              <div class="invalid-feedback text-danger fw-bold">La contraseña debe tener al menos 6 caracteres.</div>
             </div>
 
-            <button type="button" class="btn btn-lg w-100 fw-black text-uppercase py-3 mb-3" 
+            <button type="submit" class="btn btn-lg w-100 fw-black text-uppercase py-3 mb-3" 
                     style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
               INGRESAR AL SISTEMA
             </button>

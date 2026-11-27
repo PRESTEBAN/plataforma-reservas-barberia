@@ -88,8 +88,7 @@
               </select>
               <div class="invalid-feedback text-danger fw-bold">Selecciona a uno de nuestros barberos oficiales.</div>
             </div>
-
-            <!-- Fecha Hora -->
+            <!-- Fecha y Hora con restricción de pasado -->
             <div class="mb-4">
               <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Fecha y Hora</label>
               <input 
@@ -97,8 +96,9 @@
                 class="form-control form-control-lg border-secondary" 
                 style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
                 formControlName="fechaHora"
+                [min]="fechaMinima"
                 [ngClass]="{'is-invalid': reservaForm.get('fechaHora')?.touched && reservaForm.get('fechaHora')?.invalid}">
-              <div class="invalid-feedback text-danger fw-bold">Selecciona la fecha y hora de tu cita.</div>
+              <div class="invalid-feedback text-danger fw-bold">Selecciona una fecha y hora futura.</div>
             </div>
 
             <!-- Botones -->
