@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'admin';
+    }
+
+    match /usuarios/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if signedIn() && request.auth.uid == uid && request.resource.data.rol == 'cliente';
+      allow update: if isAdmin();
+    }
+
+    match /servicios/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /barberos/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /reservas/{id} {
+      allow read: if signedIn() && (resource.data.clienteUid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.clienteUid == request.auth.uid
+        && request.resource.data.estado == 'CONFIRMADA';
+      allow update: if isAdmin() || (
+        signedIn()
+        && resource.data.clienteUid == request.auth.uid
+        && request.resource.data.estado == 'CANCELADA'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado'])
+      );
+    }
+
+    match /horariosOcupados/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.clienteUid == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.clienteUid == request.auth.uid || isAdmin());
+    }
+  }
+}

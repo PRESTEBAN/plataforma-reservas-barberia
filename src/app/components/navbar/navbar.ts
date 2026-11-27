@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -8,4 +9,22 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
-export class NavbarComponent {}
+export class NavbarComponent {
+  auth = inject(AuthService);
+  private router = inject(Router);
+  menuAbierto = false;
+
+  toggleMenu(): void {
+    this.menuAbierto = !this.menuAbierto;
+  }
+
+  cerrarMenu(): void {
+    this.menuAbierto = false;
+  }
+
+  async cerrarSesion(): Promise<void> {
+    await this.auth.logout();
+    this.menuAbierto = false;
+    this.router.navigate(['/servicios']);
+  }
+}

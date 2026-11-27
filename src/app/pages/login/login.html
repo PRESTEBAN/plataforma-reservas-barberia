@@ -21,8 +21,9 @@
 
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <div class="mb-3 text-start">
-              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Correo Electrónico</label>
+              <label for="login-email" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Correo Electrónico</label>
               <input 
+                id="login-email"
                 type="email" 
                 class="form-control form-control-lg" 
                 style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" 
@@ -33,8 +34,9 @@
             </div>
 
             <div class="mb-4 text-start">
-              <label class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Contraseña</label>
+              <label for="login-password" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Contraseña</label>
               <input 
+                id="login-password"
                 type="password" 
                 class="form-control form-control-lg" 
                 style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" 
@@ -44,13 +46,14 @@
               <div class="invalid-feedback text-danger fw-bold">La contraseña debe tener al menos 6 caracteres.</div>
             </div>
 
-            <button type="submit" class="btn btn-lg w-100 fw-black text-uppercase py-3 mb-3" 
+            <button type="submit" class="btn btn-lg w-100 fw-black text-uppercase py-3 mb-3"
+                    [disabled]="cargando"
                     style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
-              INGRESAR AL SISTEMA
+              {{ cargando ? 'ENTRANDO...' : 'INGRESAR AL SISTEMA' }}
             </button>
 
             <a routerLink="/registro" class="text-uppercase fw-bold small text-decoration-none d-block" style="color: #F0E9DC;">
-              ¿No tienes cuenta? <span style="color: #C6A66B;">Regístrate aquí, mi pana</span>
+              ¿No tienes cuenta? <span style="color: #C6A66B;">Regístrate aquí</span>
             </a>
           </form>
 

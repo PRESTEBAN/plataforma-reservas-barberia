@@ -56,10 +56,11 @@
               <div class="invalid-feedback text-danger fw-bold">La contraseña debe tener al menos 6 caracteres.</div>
             </div>
 
-            <button type="submit" class="btn btn-lg w-100 fw-black text-uppercase py-3 mb-3" 
-                    style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
-              REGISTRARSE
-            </button>
+            <button type="submit" class="btn btn-lg w-100 fw-black text-uppercase py-3 mb-3"
+                    [disabled]="cargando"
+                   style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
+            {{ cargando ? 'REGISTRANDO...' : 'REGISTRARSE' }}
+          </button>
 
             <a routerLink="/login" class="text-uppercase fw-bold small text-decoration-none d-block" style="color: #F0E9DC;">
               ¿Ya tienes cuenta? <span style="color: #C6A66B;">Inicia sesión</span>

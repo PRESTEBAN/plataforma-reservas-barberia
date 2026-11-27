@@ -1,70 +1,199 @@
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 pb-3 mb-4 admin-borde">
     <div>
-      <h3 class="fw-black text-uppercase m-0" style="color: #C6A66B; font-weight: 900; letter-spacing: 1.5px; text-shadow: 0 0 10px rgba(198,166,107,0.4);">
-        PANEL ADMINISTRATIVO TAURUS
-      </h3>
-      <p class="small text-uppercase fw-bold m-0" style="color: #F0E9DC; opacity: 0.8; letter-spacing: 0.5px;">
-        «Gestión general de barberos, servicios y citas»
-      </p>
+      <h1 class="admin-titulo h2 text-uppercase mb-1">Panel Administrativo Taurus</h1>
+      <p class="admin-sub text-uppercase small fw-bold mb-0">Gestión de reservas, servicios y barberos</p>
     </div>
-    <span class="badge px-3 py-2 text-uppercase" style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 800;">
-      MODO ADMINISTRADOR
-    </span>
+    <span class="badge admin-chip text-uppercase px-3 py-2">Modo administrador</span>
   </div>
 
-  <!-- Métricas Rápidas -->
+  @if (mensaje()) {
+    <div class="alert admin-alert-ok fw-bold" role="status">{{ mensaje() }}</div>
+  }
+  @if (error()) {
+    <div class="alert admin-alert-error fw-bold" role="alert">{{ error() }}</div>
+  }
+
+  <!-- Resumen -->
   <div class="row g-3 mb-4">
-    <div class="col-md-4">
-      <div class="card p-3" style="background-color: #1a1a1a; border: 1px solid #C6A66B;">
-        <h6 class="text-uppercase fw-bold" style="color: #C6A66B;">Total Citas</h6>
-        <h2 class="fw-black m-0" style="color: #F0E9DC;">24</h2>
+    <div class="col-6 col-lg-3">
+      <div class="admin-card p-3 h-100">
+        <div class="admin-label">Total reservas</div>
+        <div class="admin-numero">{{ reservas().length }}</div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card p-3" style="background-color: #1a1a1a; border: 1px solid #C6A66B;">
-        <h6 class="text-uppercase fw-bold" style="color: #C6A66B;">Barberos Activos</h6>
-        <h2 class="fw-black m-0" style="color: #F0E9DC;">4 (Efren, Edgardo, Julio, Carlos)</h2>
+    <div class="col-6 col-lg-3">
+      <div class="admin-card p-3 h-100">
+        <div class="admin-label">Confirmadas</div>
+        <div class="admin-numero">{{ totalConfirmadas() }}</div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card p-3" style="background-color: #1a1a1a; border: 1px solid #C6A66B;">
-        <h6 class="text-uppercase fw-bold" style="color: #C6A66B;">Servicios Activos</h6>
-        <h2 class="fw-black m-0" style="color: #F0E9DC;">3</h2>
+    <div class="col-6 col-lg-3">
+      <div class="admin-card p-3 h-100">
+        <div class="admin-label">Barberos activos</div>
+        <div class="admin-numero">{{ barberosActivos() }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="admin-card p-3 h-100">
+        <div class="admin-label">Servicios activos</div>
+        <div class="admin-numero">{{ serviciosActivos() }}</div>
       </div>
     </div>
   </div>
 
-  <div class="card p-4" style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px;">
-    <h5 class="fw-black text-uppercase mb-3" style="color: #C6A66B;">Últimas Reservas Registradas</h5>
+  <!-- Reservas -->
+  <section class="admin-card p-4 mb-4" aria-labelledby="titulo-reservas">
+    <h2 id="titulo-reservas" class="admin-label h5 text-uppercase mb-3">Reservas</h2>
+
+    <div class="row g-2 mb-3 align-items-end">
+      <div class="col-12 col-md-4">
+        <label for="filtro-fecha" class="admin-label small">Fecha</label>
+        <input id="filtro-fecha" type="date" class="form-control admin-input"
+               [value]="filtroFecha()" (input)="filtroFecha.set($any($event.target).value)">
+      </div>
+      <div class="col-12 col-md-4">
+        <label for="filtro-estado" class="admin-label small">Estado</label>
+        <select id="filtro-estado" class="form-select admin-input"
+                [value]="filtroEstado()" (change)="filtroEstado.set($any($event.target).value)">
+          <option value="">Todos</option>
+          <option value="CONFIRMADA">Confirmada</option>
+          <option value="CANCELADA">Cancelada</option>
+          <option value="ATENDIDA">Atendida</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-4">
+        <button type="button" class="btn admin-btn-outline w-100" (click)="limpiarFiltros()">Limpiar filtros</button>
+      </div>
+    </div>
+
     <div class="table-responsive">
-      <table class="table table-dark align-middle m-0" style="background-color: #1a1a1a; color: #F0E9DC;">
+      <table class="table table-dark align-middle admin-tabla mb-0">
         <thead>
-          <tr class="text-uppercase border-bottom border-secondary" style="color: #C6A66B; font-size: 0.85rem;">
+          <tr>
             <th>Cliente</th>
             <th>Servicio</th>
             <th>Barbero</th>
-            <th>Fecha/Hora</th>
+            <th>Fecha y hora</th>
             <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="border-bottom border-secondary">
-            <td>Juan Pérez</td>
-            <td>Corte TAURUS Urban</td>
-            <td><span class="badge text-uppercase" style="background-color: #111111; color: #C6A66B; border: 1px solid #C6A66B;">Efren</span></td>
-            <td>28/11/2026 - 10:00 AM</td>
-            <td><span class="badge bg-success">CONFIRMADA</span></td>
-          </tr>
-          <tr class="border-bottom border-secondary">
-            <td>Carlos Gómez</td>
-            <td>Corte + Barba Premium</td>
-            <td><span class="badge text-uppercase" style="background-color: #111111; color: #C6A66B; border: 1px solid #C6A66B;">Julio</span></td>
-            <td>28/11/2026 - 11:30 AM</td>
-            <td><span class="badge bg-success">CONFIRMADA</span></td>
-          </tr>
+          @for (r of reservasFiltradas(); track r.id) {
+            <tr>
+              <td>{{ r.clienteNombre }}<br><small class="text-secondary">{{ r.clienteEmail }}</small></td>
+              <td>{{ r.servicioNombre }}</td>
+              <td>{{ r.barberoNombre }}</td>
+              <td>{{ r.inicio | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td><span class="badge {{ claseEstado(r.estado) }}">{{ r.estado }}</span></td>
+              <td class="text-nowrap">
+                @if (r.estado === 'CONFIRMADA') {
+                  <button type="button" class="btn btn-sm admin-btn me-1" (click)="marcarAtendida(r)">Atendida</button>
+                  <button type="button" class="btn btn-sm admin-btn-outline" (click)="cancelarReserva(r)">Cancelar</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-4 text-secondary">
+                {{ cargando() ? 'Cargando...' : 'No hay reservas que coincidan con el filtro.' }}
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
-  </div>
+  </section>
+
+  <!-- Servicios -->
+  <section class="admin-card p-4 mb-4" aria-labelledby="titulo-servicios">
+    <h2 id="titulo-servicios" class="admin-label h5 text-uppercase mb-3">Servicios</h2>
+
+    <form [formGroup]="servicioForm" (ngSubmit)="guardarServicio()" class="row g-2 mb-4">
+      <div class="col-12 col-md-4">
+        <label for="srv-nombre" class="admin-label small">Nombre</label>
+        <input id="srv-nombre" type="text" class="form-control admin-input" formControlName="nombre"
+               [class.is-invalid]="servicioForm.controls.nombre.touched && servicioForm.controls.nombre.invalid">
+        <div class="invalid-feedback">Mínimo 3 caracteres.</div>
+      </div>
+      <div class="col-12 col-md-4">
+        <label for="srv-desc" class="admin-label small">Descripción</label>
+        <input id="srv-desc" type="text" class="form-control admin-input" formControlName="descripcion"
+               [class.is-invalid]="servicioForm.controls.descripcion.touched && servicioForm.controls.descripcion.invalid">
+        <div class="invalid-feedback">Mínimo 5 caracteres.</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <label for="srv-dur" class="admin-label small">Duración (min)</label>
+        <input id="srv-dur" type="number" class="form-control admin-input" formControlName="duracionMinutos"
+               [class.is-invalid]="servicioForm.controls.duracionMinutos.touched && servicioForm.controls.duracionMinutos.invalid">
+        <div class="invalid-feedback">Entre 10 y 240.</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <label for="srv-precio" class="admin-label small">Precio ($)</label>
+        <input id="srv-precio" type="number" step="0.5" class="form-control admin-input" formControlName="precio"
+               [class.is-invalid]="servicioForm.controls.precio.touched && servicioForm.controls.precio.invalid">
+        <div class="invalid-feedback">Debe ser 0 o más.</div>
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn admin-btn">{{ editandoId() ? 'Guardar cambios' : 'Crear servicio' }}</button>
+        @if (editandoId()) {
+          <button type="button" class="btn admin-btn-outline" (click)="cancelarEdicion()">Cancelar edición</button>
+        }
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-dark align-middle admin-tabla mb-0">
+        <thead>
+          <tr><th>Servicio</th><th>Duración</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          @for (s of servicios(); track s.id) {
+            <tr>
+              <td>{{ s.nombre }}<br><small class="text-secondary">{{ s.descripcion }}</small></td>
+              <td>{{ s.duracionMinutos }} min</td>
+              <td>${{ s.precio }}</td>
+              <td><span class="badge {{ s.activo ? 'badge-confirmada' : 'badge-cancelada' }}">{{ s.activo ? 'ACTIVO' : 'INACTIVO' }}</span></td>
+              <td class="text-nowrap">
+                <button type="button" class="btn btn-sm admin-btn me-1" (click)="editarServicio(s)">Editar</button>
+                <button type="button" class="btn btn-sm admin-btn-outline" (click)="alternarServicio(s)">
+                  {{ s.activo ? 'Desactivar' : 'Activar' }}
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5" class="text-center py-4 text-secondary">No hay servicios.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Barberos -->
+  <section class="admin-card p-4" aria-labelledby="titulo-barberos">
+    <h2 id="titulo-barberos" class="admin-label h5 text-uppercase mb-3">Barberos</h2>
+    <div class="table-responsive">
+      <table class="table table-dark align-middle admin-tabla mb-0">
+        <thead>
+          <tr><th>Barbero</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          @for (b of barberos(); track b.id) {
+            <tr>
+              <td>{{ b.nombre }}</td>
+              <td><span class="badge {{ b.activo ? 'badge-confirmada' : 'badge-cancelada' }}">{{ b.activo ? 'ACTIVO' : 'INACTIVO' }}</span></td>
+              <td>
+                <button type="button" class="btn btn-sm admin-btn-outline" (click)="alternarBarbero(b)">
+                  {{ b.activo ? 'Desactivar' : 'Activar' }}
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="3" class="text-center py-4 text-secondary">No hay barberos.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>

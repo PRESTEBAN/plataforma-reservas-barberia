@@ -42,3 +42,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Configuración de Firebase (cada integrante tiene su copia local)
+src/environments/firebase.config.ts

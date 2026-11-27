@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-registro',
@@ -13,6 +14,10 @@ import { Router, RouterLink } from '@angular/router';
 export class RegistroComponent implements OnInit {
   registroForm!: FormGroup;
   mensajeError: string = '';
+  cargando = false;
+
+  private auth = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     private fb: FormBuilder,
@@ -27,18 +32,25 @@ export class RegistroComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     this.mensajeError = '';
 
     if (this.registroForm.invalid) {
       this.registroForm.markAllAsTouched();
-      this.mensajeError = 'Completa todos los campos correctamente para registrarte, mi pana.';
+      this.mensajeError = 'Completa todos los campos correctamente para registrarte.';
       return;
     }
 
-    console.log('Datos de registro:', this.registroForm.value);
-
-    // Simulación de registro exitoso hacia la vista principal
-    this.router.navigate(['/servicios']);
+    this.cargando = true;
+    try {
+      const { nombre, email, password } = this.registroForm.value;
+      await this.auth.registrar(nombre, email, password);
+      this.router.navigate(['/servicios']);
+    } catch (e: any) {
+      this.mensajeError = e.message;
+    } finally {
+      this.cargando = false;
+      this.cdr.markForCheck();
+    }
   }
 }

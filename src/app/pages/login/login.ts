@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,10 @@ import { Router, RouterLink } from '@angular/router';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   mensajeError: string = '';
+  cargando = false;
+
+  private auth = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     private fb: FormBuilder,
@@ -26,18 +31,25 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     this.mensajeError = '';
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
-      this.mensajeError = 'Por favor, ingresa un correo y contraseña válidos, mi pana.';
+      this.mensajeError = 'Ingresa un correo y una contraseña válidos.';
       return;
     }
 
-    console.log('Credenciales ingresadas:', this.loginForm.value);
-    
-    // Simulación de acceso exitoso mientras Esteban (Integrante B) conecta Firebase Auth
-    this.router.navigate(['/servicios']);
+    this.cargando = true;
+    try {
+      const { email, password } = this.loginForm.value;
+      await this.auth.login(email, password);
+      this.router.navigate([this.auth.esAdmin() ? '/admin' : '/servicios']);
+    } catch (e: any) {
+      this.mensajeError = e.message;
+    } finally {
+      this.cargando = false;
+      this.cdr.markForCheck();
+    }
   }
 }
