@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { collection, doc, getDoc, getDocs, setDoc, updateDoc, addDoc } from 'firebase/firestore';
+import {
+  addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where
+} from 'firebase/firestore';
 import { db } from './firebase';
-import { Barbero, Servicio } from './models';
+import { reservaCabeEnHorario, validarHorario } from './horarios';
+import { Barbero, HORARIO_POR_DEFECTO, HorarioAtencion, Reserva, Servicio } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ServicioService {
@@ -17,7 +20,7 @@ export class ServicioService {
   }
 
   async crearServicio(servicio: Servicio): Promise<void> {
-    const { id, ...datos } = servicio; // el id lo genera Firestore
+    const { id, ...datos } = servicio;
     await addDoc(collection(db, 'servicios'), datos);
   }
 
@@ -29,7 +32,6 @@ export class ServicioService {
     await updateDoc(doc(db, 'servicios', id), { activo });
   }
 
-  // ---------- BARBEROS ----------
   async listarBarberos(soloActivos = false): Promise<Barbero[]> {
     const snap = await getDocs(collection(db, 'barberos'));
     const lista = snap.docs.map((d) => ({ ...(d.data() as Barbero), id: d.id }));
@@ -45,31 +47,28 @@ export class ServicioService {
     await updateDoc(doc(db, 'barberos', id), { activo });
   }
 
-  // El administrador define el horario de atención del barbero (franja de disponibilidad)
-  async actualizarHorarioBarbero(id: string, horaInicio: string, horaFin: string): Promise<void> {
-    await updateDoc(doc(db, 'barberos', id), { horaInicio, horaFin });
+  async actualizarHorarioBarbero(barberoId: string, horario: HorarioAtencion): Promise<void> {
+    const error = validarHorario(horario);
+    if (error) throw new Error(error);
+
+    const q = query(
+      collection(db, 'reservas'),
+      where('barberoId', '==', barberoId),
+      where('estado', '==', 'CONFIRMADA')
+    );
+    const snap = await getDocs(q);
+    const ahora = Date.now();
+    const conflictos = snap.docs
+      .map((d) => d.data() as Reserva)
+      .filter((r) => r.inicio > ahora && !reservaCabeEnHorario(r.inicio, r.fin, horario));
+
+    if (conflictos.length > 0) {
+      throw new Error(
+        `No se puede cambiar el horario: ${conflictos.length} reserva(s) futura(s) confirmada(s) quedarían fuera del nuevo horario. Cancélalas primero.`
+      );
+    }
+
+    await updateDoc(doc(db, 'barberos', barberoId), { horario });
   }
 
-  // Carga datos ficticios de ejemplo (solo el administrador puede escribir según las reglas)
-  async sembrarDatos(): Promise<void> {
-    const servicios: Servicio[] = [
-      { id: '1', nombre: 'Corte TAURUS Urban', descripcion: 'Corte moderno con acabado profesional.', duracionMinutos: 30, precio: 8, activo: true },
-      { id: '2', nombre: 'Corte + Barba Premium', descripcion: 'Corte completo y perfilado de barba.', duracionMinutos: 45, precio: 12, activo: true },
-      { id: '3', nombre: 'Barba Express & Contornos', descripcion: 'Perfilado y contornos rápidos.', duracionMinutos: 20, precio: 5, activo: true }
-    ];
-    const barberos: Barbero[] = [
-      { id: 'b1', nombre: 'Efren (Master Fade)', activo: true, horaInicio: '09:00', horaFin: '19:00' },
-      { id: 'b2', nombre: 'Edgardo (Tijera Premium)', activo: true, horaInicio: '09:00', horaFin: '19:00' },
-      { id: 'b3', nombre: 'Julio (Perfilado de Barba)', activo: true, horaInicio: '09:00', horaFin: '19:00' },
-      { id: 'b4', nombre: 'Carlos (Tratamientos Capilares)', activo: true, horaInicio: '09:00', horaFin: '19:00' }
-    ];
-    for (const s of servicios) {
-      const { id, ...datos } = s;
-      await setDoc(doc(db, 'servicios', id!), datos);
-    }
-    for (const b of barberos) {
-      const { id, ...datos } = b;
-      await setDoc(doc(db, 'barberos', id!), datos);
-    }
-  }
 }

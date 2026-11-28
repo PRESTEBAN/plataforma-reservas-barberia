@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ServicioService } from '../../services/servicio.service';
 import { Barbero, Servicio } from '../../services/models';
+import { horarioDe, resumenHorario } from '../../services/horarios';
 
 @Component({
   selector: 'app-servicios-catalogo',
@@ -20,7 +21,6 @@ export class ServiciosCatalogoComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      // Servicios y barberos activos guardados en Firestore
       this.servicios.set(await this.servicioService.listarServicios(true));
       this.barberos.set(await this.servicioService.listarBarberos(true));
     } catch {
@@ -28,5 +28,9 @@ export class ServiciosCatalogoComponent implements OnInit {
     } finally {
       this.cargando.set(false);
     }
+  }
+
+  resumen(b: Barbero): string {
+    return resumenHorario(horarioDe(b));
   }
 }

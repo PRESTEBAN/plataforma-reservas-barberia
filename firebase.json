@@ -1,0 +1,12 @@
+{
+  "hosting": {
+    "public": "dist/Barberia_Proyecto_Integrador/browser",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "**", "destination": "/index.html" }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

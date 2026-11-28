@@ -17,14 +17,23 @@ export interface Servicio {
   activo: boolean;
 }
 
-// El barbero es el "recurso reservable". horaInicio y horaFin ("HH:mm") son su horario de atención;
-// si no existen en Firestore se usa el horario general (09:00 a 19:00).
+export interface HorarioAtencion {
+  dias: number[];
+  inicio: string;
+  fin: string;
+}
+
+export const HORARIO_POR_DEFECTO: HorarioAtencion = {
+  dias: [1, 2, 3, 4, 5, 6],
+  inicio: '09:00',
+  fin: '19:00'
+};
+
 export interface Barbero {
   id?: string;
   nombre: string;
   activo: boolean;
-  horaInicio?: string;
-  horaFin?: string;
+  horario?: HorarioAtencion;
 }
 
 export interface Reserva {
@@ -38,8 +47,8 @@ export interface Reserva {
   barberoNombre: string;
   fecha: string;          
   inicio: number;         
-  fin: number;            
+  fin: number;           
   duracionMinutos: number;
-  precio?: number;        // precio del servicio al momento de reservar
+  precio?: number;        
   estado: EstadoReserva;
 }

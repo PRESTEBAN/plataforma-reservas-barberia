@@ -34,7 +34,7 @@
               {{ cargando ? 'ENTRANDO...' : 'INGRESAR AL SISTEMA' }}
             </button>
 
-            <a routerLink="/registro" class="text-uppercase fw-bold small text-decoration-none d-block t-marfil">
+            <a routerLink="/registro" [queryParams]="returnUrl ? { returnUrl: returnUrl } : null" class="text-uppercase fw-bold small text-decoration-none d-block t-marfil">
               ¿No tienes cuenta? <span class="t-dorado">Regístrate aquí</span>
             </a>
           </form>

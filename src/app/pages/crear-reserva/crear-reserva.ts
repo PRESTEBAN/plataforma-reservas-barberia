@@ -1,18 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { AbstractControl, ReactiveFormsModule, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { ReservaService } from '../../services/reserva.service';
 import { ServicioService } from '../../services/servicio.service';
 import { Barbero, Servicio } from '../../services/models';
-import { fechaATexto } from '../../services/horarios';
-
-// Validador propio: la fecha elegida no puede ser anterior a hoy
-function fechaNoPasada(control: AbstractControl): ValidationErrors | null {
-  if (control.value && control.value < fechaATexto(new Date())) {
-    return { fechaPasada: true };
-  }
-  return null;
-}
+import { horarioDe, hoyNegocio, resumenHorario } from '../../services/horarios';
 
 @Component({
   selector: 'app-crear-reserva',
@@ -27,83 +20,89 @@ export class CrearReservaComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private reservaService = inject(ReservaService);
   private servicioService = inject(ServicioService);
+  auth = inject(AuthService);
+
+  reservaForm = this.fb.nonNullable.group({
+    servicioId: ['', [Validators.required]],
+    barberoId: ['', [Validators.required]],
+    fecha: ['', [Validators.required]],
+    hora: ['', [Validators.required]]
+  });
 
   servicios = signal<Servicio[]>([]);
   barberos = signal<Barbero[]>([]);
-  // Horas libres para el servicio, barbero y fecha elegidos
   horas = signal<string[]>([]);
-  buscandoHoras = signal(false);
+  horasCargadas = signal(false);
+  cargandoHoras = signal(false);
   cargando = signal(false);
   mensajeExito = signal('');
   mensajeError = signal('');
-  fechaMinima = fechaATexto(new Date());
+  fechaMinima = '';
 
-  reservaForm = this.fb.nonNullable.group({
-    servicioId: ['', Validators.required],
-    barberoId: ['', Validators.required],
-    fecha: ['', [Validators.required, fechaNoPasada]],
-    hora: ['', Validators.required]
-  });
+  private ultimaClave = '';
+  private horaPendiente = '';
+  private consulta = 0;
 
   async ngOnInit(): Promise<void> {
-    // Si viene del catálogo, el servicio ya queda seleccionado
-    const servicioId = this.route.snapshot.queryParamMap.get('servicioId');
-    const barberoId = this.route.snapshot.queryParamMap.get('barberoId');
-    if (servicioId) {
-      this.reservaForm.patchValue({ servicioId });
-    }
-    if (barberoId) {
-      this.reservaForm.patchValue({ barberoId });
-    }
-
-    // Cuando cambia el servicio, el barbero o la fecha se vuelven a calcular las horas libres
-    this.reservaForm.controls.servicioId.valueChanges.subscribe(() => this.actualizarHoras());
-    this.reservaForm.controls.barberoId.valueChanges.subscribe(() => this.actualizarHoras());
-    this.reservaForm.controls.fecha.valueChanges.subscribe(() => this.actualizarHoras());
+    this.fechaMinima = hoyNegocio();
 
     try {
       this.servicios.set(await this.servicioService.listarServicios(true));
       this.barberos.set(await this.servicioService.listarBarberos(true));
     } catch {
       this.mensajeError.set('Error al cargar servicios y barberos.');
-    }
-    this.actualizarHoras();
-  }
-
-  campoInvalido(nombre: 'servicioId' | 'barberoId' | 'fecha' | 'hora'): boolean {
-    const campo = this.reservaForm.controls[nombre];
-    return campo.invalid && campo.touched;
-  }
-
-  // true cuando ya se eligió todo lo necesario para consultar horas
-  get listoParaBuscar(): boolean {
-    const { servicioId, barberoId, fecha } = this.reservaForm.getRawValue();
-    return !!servicioId && !!barberoId && !!fecha && fecha >= this.fechaMinima;
-  }
-
-  // Consulta en Firestore las horas libres del barbero para ese servicio y esa fecha
-  async actualizarHoras(): Promise<void> {
-    const { servicioId, barberoId, fecha, hora } = this.reservaForm.getRawValue();
-
-    if (!this.listoParaBuscar) {
-      this.horas.set([]);
-      this.reservaForm.controls.hora.setValue('');
       return;
     }
 
-    this.buscandoHoras.set(true);
-    try {
-      this.horas.set(await this.reservaService.horariosDisponibles(barberoId, servicioId, fecha));
-    } catch {
-      this.horas.set([]);
-      this.mensajeError.set('No se pudieron consultar los horarios disponibles.');
-    } finally {
-      this.buscandoHoras.set(false);
-    }
+    this.reservaForm.valueChanges.subscribe(() => this.actualizarHoras());
 
-    // Si la hora elegida ya no está libre, se limpia
-    if (hora && !this.horas().includes(hora)) {
-      this.reservaForm.controls.hora.setValue('');
+    this.route.queryParams.subscribe((params) => {
+      const valores: Partial<{ servicioId: string; barberoId: string; fecha: string }> = {};
+      if (params['servicioId']) valores.servicioId = params['servicioId'];
+      if (params['barberoId']) valores.barberoId = params['barberoId'];
+      if (params['fecha']) valores.fecha = params['fecha'];
+      if (params['hora']) this.horaPendiente = params['hora'];
+      this.reservaForm.patchValue(valores);
+    });
+  }
+
+  horarioBarbero(): string {
+    const id = this.reservaForm.controls.barberoId.value;
+    const barbero = this.barberos().find((b) => b.id === id);
+    return barbero ? resumenHorario(horarioDe(barbero)) : '';
+  }
+
+  private async actualizarHoras(): Promise<void> {
+    const { servicioId, barberoId, fecha } = this.reservaForm.getRawValue();
+    const clave = `${servicioId}|${barberoId}|${fecha}`;
+    if (clave === this.ultimaClave) return;
+    this.ultimaClave = clave;
+
+    this.reservaForm.controls.hora.setValue('');
+    this.horas.set([]);
+    this.horasCargadas.set(false);
+
+    const servicio = this.servicios().find((s) => s.id === servicioId);
+    const barbero = this.barberos().find((b) => b.id === barberoId);
+    if (!servicio || !barbero || !fecha) return;
+
+    const consulta = ++this.consulta;
+    this.cargandoHoras.set(true);
+    try {
+      const horas = await this.reservaService.horasDisponibles(servicio, barbero, fecha);
+      if (consulta !== this.consulta) return;
+      this.horas.set(horas);
+      this.horasCargadas.set(true);
+      if (this.horaPendiente && horas.includes(this.horaPendiente)) {
+        this.reservaForm.controls.hora.setValue(this.horaPendiente);
+      }
+      this.horaPendiente = '';
+    } catch {
+      if (consulta === this.consulta) {
+        this.mensajeError.set('No se pudieron cargar los horarios disponibles.');
+      }
+    } finally {
+      if (consulta === this.consulta) this.cargandoHoras.set(false);
     }
   }
 
@@ -113,22 +112,30 @@ export class CrearReservaComponent implements OnInit {
 
     if (this.reservaForm.invalid) {
       this.reservaForm.markAllAsTouched();
-      this.mensajeError.set('Revisa los campos marcados antes de confirmar.');
+      this.mensajeError.set('Selecciona servicio, barbero, fecha y hora para continuar.');
       return;
     }
 
     const { servicioId, barberoId, fecha, hora } = this.reservaForm.getRawValue();
+    if (!this.auth.usuario()) {
+      const returnUrl = this.router
+        .createUrlTree(['/reservar'], { queryParams: { servicioId, barberoId, fecha, hora } })
+        .toString();
+      this.router.navigate(['/login'], { queryParams: { returnUrl } });
+      return;
+    }
+
     this.cargando.set(true);
     try {
-      // El servicio de reservas aplica la regla: fecha futura, dentro del horario y sin cruces
-      await this.reservaService.crearReserva({ servicioId, barberoId, fechaHora: fecha + 'T' + hora });
-      this.mensajeExito.set('¡Listo, mi pana! Tu cita fue reservada con éxito.');
+      await this.reservaService.crearReserva({ servicioId, barberoId, fechaHora: `${fecha}T${hora}` });
+      this.mensajeExito.set('¡Listo! Tu cita fue reservada con éxito.');
       setTimeout(() => this.router.navigate(['/mis-reservas']), 1500);
     } catch (e: any) {
       this.mensajeError.set(e.message || 'Error al procesar la reserva.');
+      this.ultimaClave = '';
+      await this.actualizarHoras();
     } finally {
       this.cargando.set(false);
-      await this.actualizarHoras(); // la hora reservada deja de aparecer como libre
     }
   }
 }
