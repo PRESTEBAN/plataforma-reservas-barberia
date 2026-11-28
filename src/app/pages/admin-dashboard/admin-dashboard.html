@@ -88,8 +88,10 @@
               <td>{{ r.inicio | date: 'dd/MM/yyyy HH:mm' }}</td>
               <td><span class="badge {{ claseEstado(r.estado) }}">{{ r.estado }}</span></td>
               <td class="text-nowrap">
-                @if (r.estado === 'CONFIRMADA') {
+                @if (puedeMarcarAtendida(r)) {
                   <button type="button" class="btn btn-sm admin-btn me-1" (click)="marcarAtendida(r)">Atendida</button>
+                }
+                @if (r.estado === 'CONFIRMADA') {
                   <button type="button" class="btn btn-sm admin-btn-outline" (click)="cancelarReserva(r)">Cancelar</button>
                 }
               </td>
@@ -170,27 +172,65 @@
     </div>
   </section>
 
-  <!-- Barberos -->
+  <!-- Barberos y disponibilidad -->
   <section class="admin-card p-4" aria-labelledby="titulo-barberos">
-    <h2 id="titulo-barberos" class="admin-label h5 text-uppercase mb-3">Barberos</h2>
+    <h2 id="titulo-barberos" class="admin-label h5 text-uppercase mb-3">Barberos y disponibilidad</h2>
+
+    @if (barberoEditando(); as b) {
+      <form [formGroup]="horarioForm" (ngSubmit)="guardarHorario()" class="admin-subcard p-3 mb-4">
+        <h3 class="admin-label h6 text-uppercase mb-3">Horario de atención: {{ b.nombre }}</h3>
+
+        <fieldset class="mb-3">
+          <legend class="admin-label small">Días de atención</legend>
+          <div class="d-flex flex-wrap gap-3">
+            @for (d of diasSemana; track d.valor) {
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" [id]="'dia-' + d.valor"
+                       [checked]="diasSeleccionados().includes(d.valor)" (change)="alternarDia(d.valor)">
+                <label class="form-check-label admin-check" [attr.for]="'dia-' + d.valor">{{ d.etiqueta }}</label>
+              </div>
+            }
+          </div>
+        </fieldset>
+
+        <div class="row g-2 mb-3">
+          <div class="col-6 col-md-3">
+            <label for="hor-inicio" class="admin-label small">Hora de inicio</label>
+            <input id="hor-inicio" type="time" class="form-control admin-input" formControlName="inicio">
+          </div>
+          <div class="col-6 col-md-3">
+            <label for="hor-fin" class="admin-label small">Hora de fin</label>
+            <input id="hor-fin" type="time" class="form-control admin-input" formControlName="fin">
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn admin-btn">Guardar disponibilidad</button>
+          <button type="button" class="btn admin-btn-outline" (click)="cancelarEdicionHorario()">Cancelar</button>
+        </div>
+      </form>
+    }
+
     <div class="table-responsive">
       <table class="table table-dark align-middle admin-tabla mb-0">
         <thead>
-          <tr><th>Barbero</th><th>Estado</th><th>Acciones</th></tr>
+          <tr><th>Barbero</th><th>Horario de atención</th><th>Estado</th><th>Acciones</th></tr>
         </thead>
         <tbody>
           @for (b of barberos(); track b.id) {
             <tr>
               <td>{{ b.nombre }}</td>
+              <td>{{ resumen(b) }}</td>
               <td><span class="badge {{ b.activo ? 'badge-confirmada' : 'badge-cancelada' }}">{{ b.activo ? 'ACTIVO' : 'INACTIVO' }}</span></td>
-              <td>
+              <td class="text-nowrap">
+                <button type="button" class="btn btn-sm admin-btn me-1" (click)="editarHorario(b)">Editar horario</button>
                 <button type="button" class="btn btn-sm admin-btn-outline" (click)="alternarBarbero(b)">
                   {{ b.activo ? 'Desactivar' : 'Activar' }}
                 </button>
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="3" class="text-center py-4 text-secondary">No hay barberos.</td></tr>
+            <tr><td colspan="4" class="text-center py-4 text-secondary">No hay barberos.</td></tr>
           }
         </tbody>
       </table>

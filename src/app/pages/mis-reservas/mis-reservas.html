@@ -8,16 +8,16 @@
         «Revisa tus reservas activas o cancela si no puedes asistir»
       </p>
     </div>
-    <a routerLink="/reservar" class="btn fw-black text-uppercase px-3 py-2" 
+    <a routerLink="/reservar" class="btn fw-black text-uppercase px-3 py-2"
        style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900;">
       + NUEVA CITA
     </a>
   </div>
 
-  <div *ngIf="mensajeAlerta" class="alert alert-dismissible fade show" role="alert" 
+  <div *ngIf="mensajeAlerta" class="alert alert-dismissible fade show" role="alert"
        style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 700;">
     {{ mensajeAlerta }}
-    <button type="button" class="btn-close btn-close-white" (click)="mensajeAlerta = ''"></button>
+    <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="mensajeAlerta = ''"></button>
   </div>
 
   <div *ngIf="cargando" class="text-center py-5">
@@ -26,10 +26,10 @@
     </div>
   </div>
 
-  <div *ngIf="!cargando && reservas.length === 0" class="card text-center p-5 shadow-lg" 
+  <div *ngIf="!cargando && reservas.length === 0" class="card text-center p-5 shadow-lg"
        style="background-color: #1a1a1a; border: 1px solid #C6A66B;">
     <div class="card-body">
-      <h5 class="fw-bold text-uppercase" style="color: #F0E9DC;">Aún no tienes citas agendadas, mi pana</h5>
+      <h5 class="fw-bold text-uppercase" style="color: #F0E9DC;">Aún no tienes citas agendadas</h5>
       <p class="small text-uppercase opacity-75" style="color: #C6A66B;">Haz clic en el botón superior para apartar tu cupo.</p>
     </div>
   </div>
@@ -51,8 +51,10 @@
           <tr *ngFor="let r of reservas" class="border-bottom border-secondary">
             <td class="fw-black text-uppercase py-3 px-4" style="color: #F0E9DC; font-size: 1rem;">{{ r.servicioNombre || r.servicioId }}</td>
             <td class="py-3"><span class="badge px-3 py-2 text-uppercase" style="background-color: #111111; color: #C6A66B; border: 1px solid #C6A66B;">{{ r.barberoNombre || r.barberoId }}</span></td>
-            <td class="py-3" style="color: #F0E9DC;">{{ r.fechaHora | date:'dd/MM/yyyy - hh:mm a' }}</td>
-            <td class="fw-black py-3" style="color: #C6A66B; font-size: 1.1rem;">${{ (r.precio || 0).toFixed(2) }}</td>
+            <td class="py-3" style="color: #F0E9DC;">{{ r.inicio | date:'dd/MM/yyyy - HH:mm' }}</td>
+            <td class="fw-black py-3" style="color: #C6A66B; font-size: 1.1rem;">
+              {{ r.precio !== undefined ? '$' + r.precio.toFixed(2) : '—' }}
+            </td>
             <td class="py-3">
               <span class="badge px-3 py-2 text-uppercase" [ngClass]="{
                 'bg-success': r.estado === 'CONFIRMADA',
@@ -63,10 +65,11 @@
               </span>
             </td>
             <td class="py-3 px-4 text-end">
-              <button 
-                *ngIf="r.estado === 'CONFIRMADA'" 
+              <button
+                *ngIf="r.estado === 'CONFIRMADA'"
+                type="button"
                 class="btn btn-outline-danger btn-sm text-uppercase fw-bold"
-                (click)="cancelarReserva(r.id)">
+                (click)="cancelarReserva(r.id!)">
                 CANCELAR CITA
               </button>
               <span *ngIf="r.estado !== 'CONFIRMADA'" class="small text-uppercase opacity-50" style="color: #F0E9DC;">SIN ACCIONES</span>
