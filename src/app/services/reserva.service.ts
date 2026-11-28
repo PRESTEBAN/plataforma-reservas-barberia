@@ -1,29 +1,37 @@
 import { Injectable, inject } from '@angular/core';
 import {
-  collection, doc, getDoc, getDocs, query, where, writeBatch
+  collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { AuthService } from './auth.service';
 import { ServicioService } from './servicio.service';
-import { Reserva } from './models';
+import { generarHoras, haySolape, horarioDe, Intervalo, validarEnHorario } from './horarios';
+import { Barbero, Reserva, Servicio } from './models';
 
-const HORA_APERTURA = 9;      
-const HORA_CIERRE = 19;       
-const DIAS_CERRADOS = [0];    
-
-interface Ocupado {
-  inicio: number;
-  fin: number;
-}
-
-export function haySolape(nuevoInicio: number, nuevoFin: number, existentes: Ocupado[]): boolean {
-  return existentes.some((e) => nuevoInicio < e.fin && nuevoFin > e.inicio);
-}
+export { haySolape };
 
 @Injectable({ providedIn: 'root' })
 export class ReservaService {
   private auth = inject(AuthService);
   private servicios = inject(ServicioService);
+
+  async obtenerOcupados(barberoId: string, fecha: string): Promise<Intervalo[]> {
+    const q = query(
+      collection(db, 'horariosOcupados'),
+      where('barberoId', '==', barberoId),
+      where('fecha', '==', fecha)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => {
+      const o = d.data();
+      return { inicio: o['inicio'] as number, fin: o['fin'] as number };
+    });
+  }
+
+  async horasDisponibles(servicio: Servicio, barbero: Barbero, fecha: string): Promise<string[]> {
+    const ocupados = await this.obtenerOcupados(barbero.id!, fecha);
+    return generarHoras(fecha, servicio.duracionMinutos, horarioDe(barbero), ocupados);
+  }
 
   async crearReserva(datos: { servicioId: string; barberoId: string; fechaHora: string }): Promise<Reserva> {
     const usuario = this.auth.usuario();
@@ -48,26 +56,16 @@ export class ReservaService {
       throw new Error('El barbero seleccionado no está disponible.');
     }
 
-    if (DIAS_CERRADOS.includes(inicioDate.getDay())) {
-      throw new Error('La barbería no atiende ese día.');
-    }
-    const inicioMin = inicioDate.getHours() * 60 + inicioDate.getMinutes();
-    const finMin = inicioMin + servicio.duracionMinutos;
-    if (inicioMin < HORA_APERTURA * 60 || finMin > HORA_CIERRE * 60) {
-      throw new Error(`El horario de atención es de ${HORA_APERTURA}:00 a ${HORA_CIERRE}:00 y el servicio debe terminar dentro de ese horario.`);
-    }
-
     const inicio = inicioDate.getTime();
     const fin = inicio + servicio.duracionMinutos * 60000;
     const fecha = datos.fechaHora.slice(0, 10);
 
-    const q = query(
-      collection(db, 'horariosOcupados'),
-      where('barberoId', '==', datos.barberoId),
-      where('fecha', '==', fecha)
-    );
-    const snap = await getDocs(q);
-    const ocupados = snap.docs.map((d) => d.data() as Ocupado);
+    const errorHorario = validarEnHorario(inicio, servicio.duracionMinutos, horarioDe(barbero));
+    if (errorHorario) {
+      throw new Error(errorHorario);
+    }
+
+    const ocupados = await this.obtenerOcupados(barbero.id!, fecha);
     if (haySolape(inicio, fin, ocupados)) {
       throw new Error('Ese barbero ya tiene una reserva en ese horario. Elige otra hora u otro barbero.');
     }
@@ -143,14 +141,25 @@ export class ReservaService {
 
     const batch = writeBatch(db);
     batch.update(ref, { estado: 'CANCELADA' });
-    batch.delete(doc(db, 'horariosOcupados', id)); 
+    batch.delete(doc(db, 'horariosOcupados', id));
     await batch.commit();
   }
 
   async marcarAtendida(id: string): Promise<void> {
     if (!this.auth.esAdmin()) throw new Error('Solo el administrador puede hacer esto.');
-    const batch = writeBatch(db);
-    batch.update(doc(db, 'reservas', id), { estado: 'ATENDIDA' });
-    await batch.commit();
+
+    const ref = doc(db, 'reservas', id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) throw new Error('La reserva no existe.');
+    const reserva = snap.data() as Reserva;
+
+    if (reserva.estado !== 'CONFIRMADA') {
+      throw new Error('Solo se pueden marcar como atendidas las reservas confirmadas.');
+    }
+    if (reserva.fin > Date.now()) {
+      throw new Error('Solo puedes marcar como atendida una reserva cuando su horario ya terminó.');
+    }
+
+    await updateDoc(ref, { estado: 'ATENDIDA' });
   }
 }

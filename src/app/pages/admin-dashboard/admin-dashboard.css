@@ -24,3 +24,8 @@
 
 .admin-alert-ok { background: #17261e; color: #7be0a8; border: 1px solid #1e7e4f; }
 .admin-alert-error { background: #2a1717; color: #ff9a9a; border: 1px solid #ff6b6b; }
+
+.admin-subcard { background: #141414; border: 1px solid rgba(198, 166, 107, .5); border-radius: 8px; }
+.admin-check { color: #F0E9DC; }
+.form-check-input:checked { background-color: #C6A66B; border-color: #C6A66B; }
+.form-check-input:focus { box-shadow: 0 0 0 .2rem rgba(198, 166, 107, .35); border-color: #C6A66B; }
