@@ -85,14 +85,14 @@
               <td>{{ r.clienteNombre }}<br><small class="text-secondary">{{ r.clienteEmail }}</small></td>
               <td>{{ r.servicioNombre }}</td>
               <td>{{ r.barberoNombre }}</td>
-              <td>{{ r.inicio | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ r.inicio | date: 'dd/MM/yyyy HH:mm':'-0500' }}</td>
               <td><span class="badge {{ claseEstado(r.estado) }}">{{ r.estado }}</span></td>
               <td class="text-nowrap">
                 @if (puedeMarcarAtendida(r)) {
                   <button type="button" class="btn btn-sm admin-btn me-1" (click)="marcarAtendida(r)">Atendida</button>
                 }
                 @if (r.estado === 'CONFIRMADA') {
-                  <button type="button" class="btn btn-sm admin-btn-outline" (click)="cancelarReserva(r)">Cancelar</button>
+                  <button type="button" class="btn btn-sm admin-btn-outline" (click)="pedirCancelacion(r)">Cancelar</button>
                 }
               </td>
             </tr>
@@ -237,3 +237,14 @@
     </div>
   </section>
 </div>
+
+@if (reservaPorCancelar(); as r) {
+  <app-confirm-dialog
+    titulo="Cancelar reserva"
+    [mensaje]="'Se cancelará la reserva de ' + r.clienteNombre + ' (' + r.servicioNombre + ' con ' + r.barberoNombre + ', ' + (r.inicio | date: 'dd/MM/yyyy HH:mm':'-0500') + '). El horario quedará libre.'"
+    textoConfirmar="Sí, cancelar reserva"
+    textoCancelar="Volver"
+    [procesando]="cancelando()"
+    (confirmar)="confirmarCancelacion()"
+    (cancelar)="cerrarDialogo()" />
+}

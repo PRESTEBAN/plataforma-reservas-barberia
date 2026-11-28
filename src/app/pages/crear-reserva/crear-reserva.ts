@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { ReservaService } from '../../services/reserva.service';
 import { ServicioService } from '../../services/servicio.service';
 import { Barbero, Servicio } from '../../services/models';
-import { horarioDe, resumenHorario } from '../../services/horarios';
+import { horarioDe, hoyNegocio, resumenHorario } from '../../services/horarios';
 
 @Component({
   selector: 'app-crear-reserva',
@@ -19,6 +20,7 @@ export class CrearReservaComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private reservaService = inject(ReservaService);
   private servicioService = inject(ServicioService);
+  auth = inject(AuthService);
 
   reservaForm = this.fb.nonNullable.group({
     servicioId: ['', [Validators.required]],
@@ -38,11 +40,11 @@ export class CrearReservaComponent implements OnInit {
   fechaMinima = '';
 
   private ultimaClave = '';
+  private horaPendiente = '';
   private consulta = 0;
 
   async ngOnInit(): Promise<void> {
-    const hoy = new Date();
-    this.fechaMinima = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+    this.fechaMinima = hoyNegocio();
 
     try {
       this.servicios.set(await this.servicioService.listarServicios(true));
@@ -55,8 +57,12 @@ export class CrearReservaComponent implements OnInit {
     this.reservaForm.valueChanges.subscribe(() => this.actualizarHoras());
 
     this.route.queryParams.subscribe((params) => {
-      if (params['servicioId']) this.reservaForm.patchValue({ servicioId: params['servicioId'] });
-      if (params['barberoId']) this.reservaForm.patchValue({ barberoId: params['barberoId'] });
+      const valores: Partial<{ servicioId: string; barberoId: string; fecha: string }> = {};
+      if (params['servicioId']) valores.servicioId = params['servicioId'];
+      if (params['barberoId']) valores.barberoId = params['barberoId'];
+      if (params['fecha']) valores.fecha = params['fecha'];
+      if (params['hora']) this.horaPendiente = params['hora'];
+      this.reservaForm.patchValue(valores);
     });
   }
 
@@ -84,9 +90,13 @@ export class CrearReservaComponent implements OnInit {
     this.cargandoHoras.set(true);
     try {
       const horas = await this.reservaService.horasDisponibles(servicio, barbero, fecha);
-      if (consulta !== this.consulta) return; 
+      if (consulta !== this.consulta) return;
       this.horas.set(horas);
       this.horasCargadas.set(true);
+      if (this.horaPendiente && horas.includes(this.horaPendiente)) {
+        this.reservaForm.controls.hora.setValue(this.horaPendiente);
+      }
+      this.horaPendiente = '';
     } catch {
       if (consulta === this.consulta) {
         this.mensajeError.set('No se pudieron cargar los horarios disponibles.');
@@ -107,6 +117,14 @@ export class CrearReservaComponent implements OnInit {
     }
 
     const { servicioId, barberoId, fecha, hora } = this.reservaForm.getRawValue();
+    if (!this.auth.usuario()) {
+      const returnUrl = this.router
+        .createUrlTree(['/reservar'], { queryParams: { servicioId, barberoId, fecha, hora } })
+        .toString();
+      this.router.navigate(['/login'], { queryParams: { returnUrl } });
+      return;
+    }
+
     this.cargando.set(true);
     try {
       await this.reservaService.crearReserva({ servicioId, barberoId, fechaHora: `${fecha}T${hora}` });

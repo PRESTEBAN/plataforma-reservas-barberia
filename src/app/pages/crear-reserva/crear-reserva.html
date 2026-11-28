@@ -33,6 +33,15 @@
             </div>
           }
 
+          @if (!auth.usuario()) {
+            <div class="alert mb-3" role="note"
+                 style="background-color: #242424; color: #F0E9DC; border: 1px solid #C6A66B;">
+              Puedes consultar los horarios sin cuenta. Para confirmar tu reserva te pediremos
+              <a routerLink="/login" class="fw-bold" style="color: #C6A66B;">iniciar sesión</a> o
+              <a routerLink="/registro" class="fw-bold" style="color: #C6A66B;">registrarte</a>; tu selección se conservará.
+            </div>
+          }
+
           <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
             <!-- Servicio -->
             <div class="mb-3">
@@ -114,7 +123,7 @@
             <div class="d-grid gap-2">
               <button type="submit" [disabled]="cargando()" class="btn btn-lg fw-black text-uppercase py-3"
                       style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
-                <i class="bi bi-calendar-check-fill me-2"></i>{{ cargando() ? 'PROCESANDO...' : 'CONFIRMAR RESERVA' }}
+                <i class="bi bi-calendar-check-fill me-2"></i>{{ cargando() ? 'PROCESANDO...' : (auth.usuario() ? 'CONFIRMAR RESERVA' : 'INICIAR SESIÓN PARA CONFIRMAR') }}
               </button>
               <a routerLink="/servicios" class="btn btn-outline-light text-uppercase fw-bold py-2" style="border: 1px solid #C6A66B; color: #C6A66B;">
                 CANCELAR Y VOLVER

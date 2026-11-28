@@ -6,6 +6,17 @@ export interface Intervalo {
 }
 export const PASO_MINUTOS = 30;
 
+/**
+ * Zona horaria del negocio: America/Guayaquil (UTC-5, sin horario de verano).
+ * TODAS las fechas y horas de la aplicación (interfaz, validaciones y datos en
+ * Firestore) se interpretan en esta zona, sin importar la zona del navegador.
+ * En Firestore, `inicio` y `fin` se guardan como milisegundos UTC (epoch) y
+ * `fecha` como 'YYYY-MM-DD' del día en esta zona.
+ */
+export const ZONA_HORARIA = 'America/Guayaquil';
+export const OFFSET_NEGOCIO = '-05:00';
+const OFFSET_NEGOCIO_MS = -5 * 60 * 60 * 1000;
+
 export const NOMBRES_DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 export const NOMBRES_DIAS_CORTOS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -21,10 +32,24 @@ export function aHHmm(minutos: number): string {
 }
 
 
-export function fechaLocal(fecha: string, hhmm = '00:00'): Date {
-  const [anio, mes, dia] = fecha.split('-').map(Number);
-  const [h, m] = hhmm.split(':').map(Number);
-  return new Date(anio, mes - 1, dia, h, m, 0, 0);
+/** Convierte una fecha 'YYYY-MM-DD' y una hora 'HH:mm' (hora del negocio) en un instante. */
+export function fechaNegocio(fecha: string, hhmm = '00:00'): Date {
+  return new Date(`${fecha}T${hhmm}:00${OFFSET_NEGOCIO}`);
+}
+
+/** Descompone un instante (ms) en fecha, minutos del día y día de la semana, en hora del negocio. */
+export function partesNegocio(ms: number): { fecha: string; minutosDelDia: number; diaSemana: number } {
+  const d = new Date(ms + OFFSET_NEGOCIO_MS);
+  return {
+    fecha: d.toISOString().slice(0, 10),
+    minutosDelDia: d.getUTCHours() * 60 + d.getUTCMinutes(),
+    diaSemana: d.getUTCDay()
+  };
+}
+
+/** Fecha de hoy ('YYYY-MM-DD') en la zona horaria del negocio. */
+export function hoyNegocio(): string {
+  return partesNegocio(Date.now()).fecha;
 }
 
 export function horarioDe(barbero: Barbero | null | undefined): HorarioAtencion {
@@ -42,11 +67,11 @@ export function haySolape(nuevoInicio: number, nuevoFin: number, existentes: Int
 }
 
 export function validarEnHorario(inicio: number, duracionMin: number, horario: HorarioAtencion): string | null {
-  const d = new Date(inicio);
-  if (!horario.dias.includes(d.getDay())) {
+  const p = partesNegocio(inicio);
+  if (!horario.dias.includes(p.diaSemana)) {
     return 'El barbero no atiende ese día.';
   }
-  const inicioMin = d.getHours() * 60 + d.getMinutes();
+  const inicioMin = p.minutosDelDia;
   const finMin = inicioMin + duracionMin;
   if (inicioMin < aMinutos(horario.inicio) || finMin > aMinutos(horario.fin)) {
     return `El horario de atención de este barbero es de ${horario.inicio} a ${horario.fin} y el servicio debe terminar dentro de ese horario.`;
@@ -74,14 +99,15 @@ export function generarHoras(
   ahora: number = Date.now(),
   paso: number = PASO_MINUTOS
 ): string[] {
-  if (!horario.dias.includes(fechaLocal(fecha).getDay())) return [];
+  // El día de la semana de una fecha de calendario no depende de la zona horaria.
+  if (!horario.dias.includes(new Date(`${fecha}T00:00:00Z`).getUTCDay())) return [];
 
   const horas: string[] = [];
   const apertura = aMinutos(horario.inicio);
   const cierre = aMinutos(horario.fin);
 
   for (let m = apertura; m + duracionMin <= cierre; m += paso) {
-    const inicio = fechaLocal(fecha, aHHmm(m)).getTime();
+    const inicio = fechaNegocio(fecha, aHHmm(m)).getTime();
     const fin = inicio + duracionMin * 60000;
     if (inicio <= ahora) continue;
     if (haySolape(inicio, fin, ocupados)) continue;

@@ -9,7 +9,6 @@ export const routes: Routes = [
   },
   {
     path: 'reservar',
-    canActivate: [sesionGuard],
     loadComponent: () => import('./pages/crear-reserva/crear-reserva').then(m => m.CrearReservaComponent)
   },
   {

@@ -5,11 +5,12 @@ import { ReservaService } from '../../services/reserva.service';
 import { ServicioService } from '../../services/servicio.service';
 import { Barbero, Reserva, Servicio } from '../../services/models';
 import { horarioDe, resumenHorario } from '../../services/horarios';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe, ConfirmDialogComponent],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
@@ -28,6 +29,9 @@ export class AdminDashboard implements OnInit {
   error = signal('');
   cargando = signal(true);
   editandoId = signal<string | null>(null);
+
+  reservaPorCancelar = signal<Reserva | null>(null);
+  cancelando = signal(false);
 
   barberoEditandoId = signal<string | null>(null);
   diasSeleccionados = signal<number[]>([]);
@@ -99,9 +103,23 @@ export class AdminDashboard implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  cancelarReserva(r: Reserva): void {
-    if (!confirm(`¿Cancelar la reserva de ${r.clienteNombre}?`)) return;
-    this.ejecutar(() => this.reservaService.cancelarReserva(r.id!), 'Reserva cancelada.');
+  pedirCancelacion(r: Reserva): void {
+    this.reservaPorCancelar.set(r);
+  }
+
+  cerrarDialogo(): void {
+    if (this.cancelando()) return;
+    this.reservaPorCancelar.set(null);
+  }
+
+  async confirmarCancelacion(): Promise<void> {
+    const r = this.reservaPorCancelar();
+    if (!r) return;
+
+    this.cancelando.set(true);
+    await this.ejecutar(() => this.reservaService.cancelarReserva(r.id!), 'Reserva cancelada.');
+    this.cancelando.set(false);
+    this.reservaPorCancelar.set(null);
   }
 
   marcarAtendida(r: Reserva): void {

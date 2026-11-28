@@ -1,0 +1,28 @@
+<div class="cd-fondo" (click)="cerrar()">
+  <div class="cd-dialogo"
+       role="alertdialog"
+       aria-modal="true"
+       aria-labelledby="cd-titulo"
+       aria-describedby="cd-mensaje"
+       (click)="$event.stopPropagation()"
+       (keydown)="onKeydown($event)">
+
+    <div class="cd-icono" aria-hidden="true">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+
+    <h2 id="cd-titulo" class="cd-titulo">{{ titulo() }}</h2>
+    <p id="cd-mensaje" class="cd-mensaje">{{ mensaje() }}</p>
+
+    <div class="cd-acciones">
+      <button #btnCancelar type="button" class="cd-btn cd-btn-secundario"
+              [disabled]="procesando()" (click)="cerrar()">
+        {{ textoCancelar() }}
+      </button>
+      <button #btnConfirmar type="button" class="cd-btn cd-btn-peligro"
+              [disabled]="procesando()" (click)="confirmar.emit()">
+        {{ procesando() ? 'Procesando...' : textoConfirmar() }}
+      </button>
+    </div>
+  </div>
+</div>

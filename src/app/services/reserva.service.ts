@@ -5,7 +5,7 @@ import {
 import { db } from './firebase';
 import { AuthService } from './auth.service';
 import { ServicioService } from './servicio.service';
-import { generarHoras, haySolape, horarioDe, Intervalo, validarEnHorario } from './horarios';
+import { fechaNegocio, generarHoras, haySolape, horarioDe, Intervalo, validarEnHorario } from './horarios';
 import { Barbero, Reserva, Servicio } from './models';
 
 export { haySolape };
@@ -39,7 +39,11 @@ export class ReservaService {
       throw new Error('Debes iniciar sesión para reservar.');
     }
 
-    const inicioDate = new Date(datos.fechaHora);
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(datos.fechaHora)) {
+      throw new Error('La fecha y hora no son válidas.');
+    }
+   
+    const inicioDate = fechaNegocio(datos.fechaHora.slice(0, 10), datos.fechaHora.slice(11, 16));
     if (isNaN(inicioDate.getTime())) {
       throw new Error('La fecha y hora no son válidas.');
     }

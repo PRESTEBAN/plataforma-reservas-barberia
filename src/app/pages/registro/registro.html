@@ -62,7 +62,7 @@
             {{ cargando ? 'REGISTRANDO...' : 'REGISTRARSE' }}
           </button>
 
-            <a routerLink="/login" class="text-uppercase fw-bold small text-decoration-none d-block" style="color: #F0E9DC;">
+            <a routerLink="/login" [queryParams]="returnUrl ? { returnUrl: returnUrl } : null" class="text-uppercase fw-bold small text-decoration-none d-block" style="color: #F0E9DC;">
               ¿Ya tienes cuenta? <span style="color: #C6A66B;">Inicia sesión</span>
             </a>
           </form>

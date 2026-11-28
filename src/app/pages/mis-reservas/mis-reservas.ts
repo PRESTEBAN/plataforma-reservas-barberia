@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReservaService } from '../../services/reserva.service';
 import { Reserva } from '../../services/models';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-mis-reservas',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ConfirmDialogComponent],
   templateUrl: './mis-reservas.html',
   styleUrl: './mis-reservas.css'
 })
@@ -15,6 +16,9 @@ export class MisReservasComponent implements OnInit {
   reservas: Reserva[] = [];
   mensajeAlerta: string = '';
   cargando: boolean = true;
+
+  reservaPorCancelar: Reserva | null = null;
+  cancelando = false;
 
   constructor(
     private reservaService: ReservaService,
@@ -37,15 +41,29 @@ export class MisReservasComponent implements OnInit {
     }
   }
 
-  async cancelarReserva(id: string): Promise<void> {
-    if (!confirm('¿Estás seguro de que deseas cancelar tu cita en TAURUS?')) return;
+  pedirCancelacion(reserva: Reserva): void {
+    this.reservaPorCancelar = reserva;
+  }
 
+  cerrarDialogo(): void {
+    if (this.cancelando) return;
+    this.reservaPorCancelar = null;
+  }
+
+  async confirmarCancelacion(): Promise<void> {
+    const reserva = this.reservaPorCancelar;
+    if (!reserva?.id) return;
+
+    this.cancelando = true;
     try {
-      await this.reservaService.cancelarReserva(id);
+      await this.reservaService.cancelarReserva(reserva.id);
       this.mensajeAlerta = 'La reserva ha sido cancelada exitosamente.';
       await this.cargarReservas();
     } catch (e: any) {
       this.mensajeAlerta = e.message || 'No se pudo cancelar la reserva.';
+    } finally {
+      this.cancelando = false;
+      this.reservaPorCancelar = null;
       this.cdr.markForCheck();
     }
   }

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -18,6 +18,8 @@ export class RegistroComponent implements OnInit {
 
   private auth = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
+  returnUrl = '';
 
   constructor(
     private fb: FormBuilder,
@@ -25,6 +27,8 @@ export class RegistroComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const r = this.route.snapshot.queryParamMap.get('returnUrl') ?? '';
+    this.returnUrl = r.startsWith('/') && !r.startsWith('//') ? r : '';
     this.registroForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -45,7 +49,11 @@ export class RegistroComponent implements OnInit {
     try {
       const { nombre, email, password } = this.registroForm.value;
       await this.auth.registrar(nombre, email, password);
-      this.router.navigate(['/servicios']);
+      if (this.returnUrl) {
+        this.router.navigateByUrl(this.returnUrl);
+      } else {
+        this.router.navigate(['/servicios']);
+      }
     } catch (e: any) {
       this.mensajeError = e.message;
     } finally {

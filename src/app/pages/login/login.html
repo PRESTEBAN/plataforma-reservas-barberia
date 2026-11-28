@@ -52,7 +52,7 @@
               {{ cargando ? 'ENTRANDO...' : 'INGRESAR AL SISTEMA' }}
             </button>
 
-            <a routerLink="/registro" class="text-uppercase fw-bold small text-decoration-none d-block" style="color: #F0E9DC;">
+            <a routerLink="/registro" [queryParams]="returnUrl ? { returnUrl: returnUrl } : null" class="text-uppercase fw-bold small text-decoration-none d-block" style="color: #F0E9DC;">
               ¿No tienes cuenta? <span style="color: #C6A66B;">Regístrate aquí</span>
             </a>
           </form>
