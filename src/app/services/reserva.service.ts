@@ -16,7 +16,6 @@ interface Ocupado {
   fin: number;
 }
 
-
 export function haySolape(nuevoInicio: number, nuevoFin: number, existentes: Ocupado[]): boolean {
   return existentes.some((e) => nuevoInicio < e.fin && nuevoFin > e.inicio);
 }
@@ -26,7 +25,6 @@ export class ReservaService {
   private auth = inject(AuthService);
   private servicios = inject(ServicioService);
 
- 
   async crearReserva(datos: { servicioId: string; barberoId: string; fechaHora: string }): Promise<Reserva> {
     const usuario = this.auth.usuario();
     if (!usuario) {
@@ -63,7 +61,6 @@ export class ReservaService {
     const fin = inicio + servicio.duracionMinutos * 60000;
     const fecha = datos.fechaHora.slice(0, 10);
 
-
     const q = query(
       collection(db, 'horariosOcupados'),
       where('barberoId', '==', datos.barberoId),
@@ -88,6 +85,7 @@ export class ReservaService {
       inicio,
       fin,
       duracionMinutos: servicio.duracionMinutos,
+      precio: servicio.precio,
       estado: 'CONFIRMADA'
     };
 
@@ -121,7 +119,6 @@ export class ReservaService {
       .map((d) => ({ ...(d.data() as Reserva), id: d.id }))
       .sort((a, b) => a.inicio - b.inicio);
   }
-
 
   async cancelarReserva(id: string): Promise<void> {
     const usuario = this.auth.usuario();

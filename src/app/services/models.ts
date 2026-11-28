@@ -33,8 +33,9 @@ export interface Reserva {
   barberoId: string;
   barberoNombre: string;
   fecha: string;          
-  inicio: number;         
+  inicio: number;        
   fin: number;            
   duracionMinutos: number;
+  precio?: number;       
   estado: EstadoReserva;
 }

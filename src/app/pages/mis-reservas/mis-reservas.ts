@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReservaService } from '../../services/reserva.service';
+import { Reserva } from '../../services/models';
 
 @Component({
   selector: 'app-mis-reservas',
@@ -11,7 +12,7 @@ import { ReservaService } from '../../services/reserva.service';
   styleUrl: './mis-reservas.css'
 })
 export class MisReservasComponent implements OnInit {
-  reservas: any[] = [];
+  reservas: Reserva[] = [];
   mensajeAlerta: string = '';
   cargando: boolean = true;
 
@@ -28,25 +29,24 @@ export class MisReservasComponent implements OnInit {
     this.cargando = true;
     try {
       this.reservas = await this.reservaService.listarMisReservas();
-      this.cargando = false;
-      this.cdr.markForCheck();
     } catch (e: any) {
       this.mensajeAlerta = e.message || 'Error al cargar tus reservas.';
+    } finally {
       this.cargando = false;
       this.cdr.markForCheck();
     }
   }
 
   async cancelarReserva(id: string): Promise<void> {
-    if (confirm('¿Estás seguro de que deseas cancelar tu cita en TAURUS, mi pana?')) {
-      try {
-        await this.reservaService.cancelarReserva(id);
-        this.mensajeAlerta = 'La reserva ha sido cancelada exitosamente.';
-        await this.cargarReservas();
-      } catch (e: any) {
-        this.mensajeAlerta = e.message || 'No se pudo cancelar la reserva.';
-        this.cdr.markForCheck();
-      }
+    if (!confirm('¿Estás seguro de que deseas cancelar tu cita en TAURUS?')) return;
+
+    try {
+      await this.reservaService.cancelarReserva(id);
+      this.mensajeAlerta = 'La reserva ha sido cancelada exitosamente.';
+      await this.cargarReservas();
+    } catch (e: any) {
+      this.mensajeAlerta = e.message || 'No se pudo cancelar la reserva.';
+      this.cdr.markForCheck();
     }
   }
 }
