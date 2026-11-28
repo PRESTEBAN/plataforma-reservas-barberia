@@ -3,53 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbería TAURUS - Prototipo Inicial</title>
+    <title>Barbería TAURUS - Prototipo inicial (HTML, CSS y JavaScript)</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="navbar">
         <h1>BARBERÍA TAURUS</h1>
-        <nav>
+        <nav aria-label="Navegación principal">
             <a href="#servicios">Servicios</a>
             <a href="#barberos">Nuestros Barberos</a>
             <a href="#reservar">Reservar Cita</a>
-            <a href="#login">Acceso</a>
         </nav>
     </header>
 
     <main class="container">
         <section id="servicios">
             <h2>¡Saldrás fino! Nuestros Servicios</h2>
-            <div class="card-grid">
-                <article class="card">
+
+            <label for="buscador">Buscar servicio:</label>
+            <input type="search" id="buscador" placeholder="Ej. barba">
+
+            <div class="card-grid" id="listaServicios">
+                <article class="card" data-nombre="Corte TAURUS al Pelito">
                     <h3>Corte TAURUS al Pelito</h3>
                     <p>Duración: 30 min</p>
                     <p class="precio">$8.00</p>
                 </article>
-                <article class="card">
+                <article class="card" data-nombre="Corte + Barba de Caballero">
                     <h3>Corte + Barba de Caballero</h3>
                     <p>Duración: 45 min</p>
                     <p class="precio">$12.00</p>
                 </article>
+                <article class="card" data-nombre="Perfilado de Barba Express">
+                    <h3>Perfilado de Barba Express</h3>
+                    <p>Duración: 20 min</p>
+                    <p class="precio">$5.00</p>
+                </article>
             </div>
+            <p id="sinResultados" role="status" hidden>No hay servicios que coincidan con tu búsqueda.</p>
+        </section>
+
+        <section id="barberos">
+            <h2>Barberos de la casa</h2>
+            <ul class="lista-barberos">
+                <li>Efren — Master Fade &amp; Degradados</li>
+                <li>Edgardo — Estilos Clásicos &amp; Tijera</li>
+                <li>Julio — Diseños &amp; Perfilado de Barba</li>
+                <li>Carlos — Tratamientos &amp; Acabados</li>
+            </ul>
         </section>
 
         <section id="reservar" class="form-section">
-            <h2>¡Tu próximo estilo comienza aquí, mi pana!</h2>
-            <form id="reservaForm">
+            <h2>Tu próximo estilo comienza aquí</h2>
+            <form id="reservaForm" novalidate>
                 <label for="cliente">Nombre completo:</label>
-                <input type="text" id="cliente" required placeholder="Tu nombre, mi pana">
+                <input type="text" id="cliente" required minlength="3" placeholder="Ej. Juan Pérez">
 
                 <label for="servicio">Servicio:</label>
                 <select id="servicio" required>
                     <option value="">Selecciona un servicio</option>
-                    <option value="1">Corte TAURUS al Pelito (30 min)</option>
-                    <option value="2">Corte + Barba de Caballero (45 min)</option>
+                    <option value="1" data-min="30" data-precio="8">Corte TAURUS al Pelito (30 min)</option>
+                    <option value="2" data-min="45" data-precio="12">Corte + Barba de Caballero (45 min)</option>
+                    <option value="3" data-min="20" data-precio="5">Perfilado de Barba Express (20 min)</option>
                 </select>
 
                 <label for="barbero">Elige tu barbero de confianza:</label>
                 <select id="barbero" required>
-                    <option value="">Selecciona al pana que te atenderá</option>
+                    <option value="">Selecciona a tu barbero</option>
                     <option value="b1">Efren</option>
                     <option value="b2">Edgardo</option>
                     <option value="b3">Julio</option>
@@ -59,7 +79,10 @@
                 <label for="fecha">Fecha y hora de inicio:</label>
                 <input type="datetime-local" id="fecha" required>
 
+                <p id="resumen" role="status" aria-live="polite"></p>
+
                 <button type="submit">Confirmar Reserva</button>
+                <p id="mensaje" role="status" aria-live="polite"></p>
             </form>
         </section>
     </main>

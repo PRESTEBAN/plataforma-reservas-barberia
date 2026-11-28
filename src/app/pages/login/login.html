@@ -1,59 +1,41 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
-      <div class="card p-3 shadow-lg" 
-           style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px; box-shadow: 0 0 25px rgba(198, 166, 107, 0.25);">
+      <div class="t-card p-3">
         <div class="card-body p-4 text-center">
-          
-          <i class="bi bi-person-circle display-3 mb-2 d-block" style="color: #C6A66B;"></i>
-          <span class="badge px-3 py-2 text-uppercase mb-2" style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 800; letter-spacing: 1.5px;">
-            BARBERÍA TAURUS
-          </span>
-          <h3 class="fw-black text-uppercase mb-3" style="color: #C6A66B; font-weight: 900; letter-spacing: 2px;">
-            INICIAR SESIÓN
-          </h3>
 
-          <div *ngIf="mensajeError" class="alert d-flex align-items-center mb-3 text-start" role="alert" 
-               style="background-color: #242424; color: #ff6b6b; border: 1px solid #ff6b6b; font-weight: 700; font-size: 0.85rem;">
-            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+          <i class="bi bi-person-circle display-3 mb-2 d-block t-dorado" aria-hidden="true"></i>
+          <span class="t-badge mb-2">Barbería TAURUS</span>
+          <h1 class="h3 t-titulo mb-3">Iniciar sesión</h1>
+
+          <div *ngIf="mensajeError" class="t-alerta t-alerta-error text-start" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-5" aria-hidden="true"></i>
             <div>{{ mensajeError }}</div>
           </div>
 
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
             <div class="mb-3 text-start">
-              <label for="login-email" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Correo Electrónico</label>
-              <input 
-                id="login-email"
-                type="email" 
-                class="form-control form-control-lg" 
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" 
-                placeholder="usuario@taurus.com"
-                formControlName="email"
-                [ngClass]="{'is-invalid': loginForm.get('email')?.touched && loginForm.get('email')?.invalid}">
-              <div class="invalid-feedback text-danger fw-bold">Ingresa un correo electrónico válido.</div>
+              <label for="login-email" class="form-label t-label">Correo electrónico</label>
+              <input id="login-email" type="email" class="form-control form-control-lg t-input"
+                     placeholder="usuario@taurus.com" autocomplete="email" formControlName="email"
+                     [ngClass]="{'is-invalid': loginForm.get('email')?.touched && loginForm.get('email')?.invalid}">
+              <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
             </div>
 
             <div class="mb-4 text-start">
-              <label for="login-password" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem;">Contraseña</label>
-              <input 
-                id="login-password"
-                type="password" 
-                class="form-control form-control-lg" 
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B; color: #F0E9DC;" 
-                placeholder="••••••••"
-                formControlName="password"
-                [ngClass]="{'is-invalid': loginForm.get('password')?.touched && loginForm.get('password')?.invalid}">
-              <div class="invalid-feedback text-danger fw-bold">La contraseña debe tener al menos 6 caracteres.</div>
+              <label for="login-password" class="form-label t-label">Contraseña</label>
+              <input id="login-password" type="password" class="form-control form-control-lg t-input"
+                     placeholder="Mínimo 6 caracteres" autocomplete="current-password" formControlName="password"
+                     [ngClass]="{'is-invalid': loginForm.get('password')?.touched && loginForm.get('password')?.invalid}">
+              <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
             </div>
 
-            <button type="submit" class="btn btn-lg w-100 fw-black text-uppercase py-3 mb-3"
-                    [disabled]="cargando"
-                    style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
+            <button type="submit" class="btn btn-lg btn-champagne text-uppercase w-100 py-3 mb-3" [disabled]="cargando">
               {{ cargando ? 'ENTRANDO...' : 'INGRESAR AL SISTEMA' }}
             </button>
 
-            <a routerLink="/registro" [queryParams]="returnUrl ? { returnUrl: returnUrl } : null" class="text-uppercase fw-bold small text-decoration-none d-block" style="color: #F0E9DC;">
-              ¿No tienes cuenta? <span style="color: #C6A66B;">Regístrate aquí</span>
+            <a routerLink="/registro" class="text-uppercase fw-bold small text-decoration-none d-block t-marfil">
+              ¿No tienes cuenta? <span class="t-dorado">Regístrate aquí</span>
             </a>
           </form>
 

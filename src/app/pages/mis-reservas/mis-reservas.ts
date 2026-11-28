@@ -1,70 +1,56 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReservaService } from '../../services/reserva.service';
 import { Reserva } from '../../services/models';
-import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-mis-reservas',
   standalone: true,
-  imports: [CommonModule, RouterLink, ConfirmDialogComponent],
+  imports: [DatePipe, RouterLink],
   templateUrl: './mis-reservas.html',
   styleUrl: './mis-reservas.css'
 })
 export class MisReservasComponent implements OnInit {
-  reservas: Reserva[] = [];
-  mensajeAlerta: string = '';
-  cargando: boolean = true;
+  private reservaService = inject(ReservaService);
 
-  reservaPorCancelar: Reserva | null = null;
-  cancelando = false;
-
-  constructor(
-    private reservaService: ReservaService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  reservas = signal<Reserva[]>([]);
+  cargando = signal(true);
+  mensajeAlerta = signal('');
+  mensajeError = signal('');
 
   async ngOnInit(): Promise<void> {
     await this.cargarReservas();
   }
 
   async cargarReservas(): Promise<void> {
-    this.cargando = true;
+    this.cargando.set(true);
     try {
-      this.reservas = await this.reservaService.listarMisReservas();
+      this.reservas.set(await this.reservaService.listarMisReservas());
     } catch (e: any) {
-      this.mensajeAlerta = e.message || 'Error al cargar tus reservas.';
+      this.mensajeError.set(e.message || 'Error al cargar tus reservas.');
     } finally {
-      this.cargando = false;
-      this.cdr.markForCheck();
+      this.cargando.set(false);
     }
   }
 
-  pedirCancelacion(reserva: Reserva): void {
-    this.reservaPorCancelar = reserva;
-  }
-
-  cerrarDialogo(): void {
-    if (this.cancelando) return;
-    this.reservaPorCancelar = null;
-  }
-
-  async confirmarCancelacion(): Promise<void> {
-    const reserva = this.reservaPorCancelar;
-    if (!reserva?.id) return;
-
-    this.cancelando = true;
+  async cancelarReserva(id: string): Promise<void> {
+    if (!confirm('¿Estás seguro de que deseas cancelar tu cita en TAURUS, mi pana?')) {
+      return;
+    }
+    this.mensajeAlerta.set('');
+    this.mensajeError.set('');
     try {
-      await this.reservaService.cancelarReserva(reserva.id);
-      this.mensajeAlerta = 'La reserva ha sido cancelada exitosamente.';
+      await this.reservaService.cancelarReserva(id);
+      this.mensajeAlerta.set('La reserva ha sido cancelada y el horario quedó libre.');
       await this.cargarReservas();
     } catch (e: any) {
-      this.mensajeAlerta = e.message || 'No se pudo cancelar la reserva.';
-    } finally {
-      this.cancelando = false;
-      this.reservaPorCancelar = null;
-      this.cdr.markForCheck();
+      this.mensajeError.set(e.message || 'No se pudo cancelar la reserva.');
     }
+  }
+
+  // El botón de cancelar solo aparece en reservas confirmadas que todavía no empiezan
+  puedeCancelar(r: Reserva): boolean {
+    return r.estado === 'CONFIRMADA' && r.inicio > Date.now();
   }
 }

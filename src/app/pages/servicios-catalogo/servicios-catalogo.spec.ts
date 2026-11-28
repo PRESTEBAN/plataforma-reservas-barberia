@@ -1,22 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { ServiciosCatalogoComponent } from './servicios-catalogo';
 
-import { ServiciosCatalogo } from './servicios-catalogo';
-
-describe('ServiciosCatalogo', () => {
-  let component: ServiciosCatalogo;
-  let fixture: ComponentFixture<ServiciosCatalogo>;
+describe('ServiciosCatalogoComponent', () => {
+  let component: ServiciosCatalogoComponent;
+  let fixture: ComponentFixture<ServiciosCatalogoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ServiciosCatalogo],
+      imports: [ServiciosCatalogoComponent],
+      providers: [provideRouter([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ServiciosCatalogo);
+    fixture = TestBed.createComponent(ServiciosCatalogoComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('se crea correctamente', () => {
     expect(component).toBeTruthy();
   });
 });

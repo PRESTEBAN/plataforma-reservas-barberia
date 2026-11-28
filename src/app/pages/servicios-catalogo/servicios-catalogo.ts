@@ -1,35 +1,32 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ServicioService } from '../../services/servicio.service';
+import { Barbero, Servicio } from '../../services/models';
 
 @Component({
   selector: 'app-servicios-catalogo',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './servicios-catalogo.html',
   styleUrl: './servicios-catalogo.css'
 })
 export class ServiciosCatalogoComponent implements OnInit {
-  servicios: any[] = [];
-  barberos: any[] = [];
-  cargando: boolean = true;
+  private servicioService = inject(ServicioService);
 
-  constructor(
-    private servicioService: ServicioService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  servicios = signal<Servicio[]>([]);
+  barberos = signal<Barbero[]>([]);
+  cargando = signal(true);
+  error = signal('');
 
   async ngOnInit(): Promise<void> {
     try {
-      // Consume la lista de servicios y barberos guardados en Firestore
-      this.servicios = await this.servicioService.listarServicios(true);
-      this.barberos = await this.servicioService.listarBarberos(true);
-      this.cargando = false;
-      this.cdr.markForCheck();
-    } catch (e) {
-      this.cargando = false;
-      this.cdr.markForCheck();
+      // Servicios y barberos activos guardados en Firestore
+      this.servicios.set(await this.servicioService.listarServicios(true));
+      this.barberos.set(await this.servicioService.listarBarberos(true));
+    } catch {
+      this.error.set('No se pudo cargar el catálogo. Intenta de nuevo más tarde.');
+    } finally {
+      this.cargando.set(false);
     }
   }
 }

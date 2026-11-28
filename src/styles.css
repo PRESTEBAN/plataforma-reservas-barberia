@@ -47,7 +47,7 @@ body {
 
 /* Botón Champagne con Texto Negro Visible */
 .btn-champagne {
-  background-color: var(--taurus-champagne) !important;
+  background: linear-gradient(135deg, #d4af37 0%, var(--taurus-champagne) 100%) !important;
   color: #111111 !important;
   font-weight: 700 !important;
   border: none !important;
@@ -56,7 +56,7 @@ body {
 }
 
 .btn-champagne:hover {
-  background-color: #cf9a37 !important;
+  background: #cf9a37 !important;
   color: #000000 !important;
 }
 
@@ -78,4 +78,201 @@ body {
   background-color: var(--taurus-champagne);
   width: 80px;
   margin: 1rem auto;
+}
+
+/* ================= Clases reutilizables (reemplazan los estilos en línea) ================= */
+:root {
+  --taurus-fondo-tarjeta: #1a1a1a;
+  --taurus-error: #ff8a8a;
+}
+
+/* Foco visible para quien navega con teclado */
+a:focus-visible,
+button:focus-visible,
+.t-input:focus-visible {
+  outline: 3px solid var(--taurus-champagne);
+  outline-offset: 2px;
+}
+
+/* ---------- Barra de navegación ---------- */
+.t-nav {
+  background-color: #0b0b0b;
+  border-bottom: 2px solid var(--taurus-champagne);
+  box-shadow: 0 4px 20px rgba(198, 166, 107, 0.25);
+}
+
+.t-marca {
+  color: var(--taurus-champagne);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 1.6rem;
+}
+
+.t-marca:hover {
+  color: var(--taurus-champagne);
+}
+
+.t-nav-link {
+  color: var(--taurus-marfil);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.95rem;
+}
+
+.t-nav-link:hover,
+.t-nav-link.active {
+  color: var(--taurus-champagne);
+}
+
+/* ---------- Textos ---------- */
+.t-titulo {
+  color: var(--taurus-champagne);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.t-subtitulo {
+  color: var(--taurus-marfil);
+  opacity: 0.85;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.t-dorado { color: var(--taurus-champagne); }
+.t-marfil { color: var(--taurus-marfil); }
+
+/* ---------- Tarjetas ---------- */
+.t-card {
+  background-color: var(--taurus-fondo-tarjeta);
+  border: 2px solid var(--taurus-champagne);
+  border-radius: 12px;
+  color: var(--taurus-marfil);
+  box-shadow: 0 0 25px rgba(198, 166, 107, 0.2);
+}
+
+.t-card-suave {
+  background-color: var(--taurus-grafito);
+  border: 1px solid rgba(198, 166, 107, 0.4);
+  border-radius: 10px;
+  color: var(--taurus-marfil);
+}
+
+.t-card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.t-card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(198, 166, 107, 0.5);
+}
+
+.t-banner {
+  background: linear-gradient(180deg, #1f1f1f 0%, #111111 100%);
+  border: 2px solid var(--taurus-champagne);
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(198, 166, 107, 0.25);
+}
+
+/* ---------- Insignias ---------- */
+.t-badge {
+  display: inline-block;
+  background-color: var(--taurus-grafito);
+  color: var(--taurus-champagne);
+  border: 1px solid var(--taurus-champagne);
+  border-radius: 6px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+/* ---------- Formularios ---------- */
+.t-label {
+  color: var(--taurus-champagne);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.form-control.t-input,
+.form-select.t-input {
+  background-color: #0b0b0b;
+  border: 1px solid var(--taurus-champagne);
+  color: var(--taurus-marfil);
+  color-scheme: dark;
+}
+
+.form-control.t-input:focus,
+.form-select.t-input:focus {
+  background-color: #0b0b0b;
+  color: var(--taurus-marfil);
+  border-color: var(--taurus-champagne);
+  box-shadow: 0 0 0 0.2rem rgba(198, 166, 107, 0.35);
+}
+
+/* Placeholder legible sobre fondo oscuro */
+.t-input::placeholder {
+  color: #a39b8b;
+  opacity: 1;
+}
+
+/* Flecha de los select visible (por defecto es oscura) */
+.form-select.t-input {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23C6A66B' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.form-select.t-input option {
+  background-color: var(--taurus-fondo-tarjeta);
+  color: var(--taurus-marfil);
+}
+
+/* Mensaje de error del campo: color con buen contraste sobre fondo oscuro */
+.t-input ~ .invalid-feedback,
+.t-error {
+  color: var(--taurus-error);
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* ---------- Mensajes ---------- */
+.t-alerta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  background-color: var(--taurus-grafito);
+  font-weight: 700;
+}
+
+.t-alerta-ok {
+  color: var(--taurus-champagne);
+  border: 1px solid var(--taurus-champagne);
+}
+
+.t-alerta-error {
+  color: var(--taurus-error);
+  border: 1px solid var(--taurus-error);
+}
+
+/* ---------- Tablas ---------- */
+.t-tabla {
+  --bs-table-bg: var(--taurus-fondo-tarjeta);
+  color: var(--taurus-marfil);
+}
+
+.t-tabla th {
+  color: var(--taurus-champagne);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }

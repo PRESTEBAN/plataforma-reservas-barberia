@@ -24,10 +24,15 @@ export class AuthService {
           resolve();
           return;
         }
-        if (user) {
-          const snap = await getDoc(doc(db, 'usuarios', user.uid));
-          this.usuario.set(snap.exists() ? ({ ...snap.data(), uid: user.uid } as Usuario) : null);
-        } else {
+        try {
+          if (user) {
+            const snap = await getDoc(doc(db, 'usuarios', user.uid));
+            this.usuario.set(snap.exists() ? ({ ...snap.data(), uid: user.uid } as Usuario) : null);
+          } else {
+            this.usuario.set(null);
+          }
+        } catch {
+          // Si Firestore falla, igual se libera la espera para que los guards no queden bloqueados
           this.usuario.set(null);
         }
         resolve();
@@ -63,7 +68,11 @@ export class AuthService {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       const snap = await getDoc(doc(db, 'usuarios', cred.user.uid));
-      this.usuario.set(snap.exists() ? ({ ...snap.data(), uid: cred.user.uid } as Usuario) : null);
+      if (!snap.exists()) {
+        await signOut(auth);
+        throw new Error('Tu cuenta no tiene un perfil en el sistema. Regístrate de nuevo o contacta al administrador.');
+      }
+      this.usuario.set({ ...snap.data(), uid: cred.user.uid } as Usuario);
     } catch (e) {
       throw new Error(this.traducirError(e));
     }
@@ -75,6 +84,9 @@ export class AuthService {
   }
 
   private traducirError(e: any): string {
+    if (e instanceof Error && !(e as any).code) {
+      return e.message; // mensajes propios de esta clase
+    }
     switch (e?.code) {
       case 'auth/email-already-in-use':
         return 'Ese correo ya está registrado.';

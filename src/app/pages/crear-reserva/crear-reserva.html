@@ -1,133 +1,94 @@
 <div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
-      <div class="card p-2 shadow-lg"
-           style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px; box-shadow: 0 0 25px rgba(198, 166, 107, 0.25);">
+      <div class="t-card p-2">
         <div class="card-body p-4">
 
           <div class="text-center mb-4">
-            <span class="badge px-3 py-2 text-uppercase mb-2" style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 800; letter-spacing: 1.5px;">
-              BARBERÍA TAURUS
-            </span>
-            <h3 class="fw-black text-uppercase m-0" style="color: #C6A66B; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 10px rgba(198,166,107,0.5);">
-              AGENDAR CITA
-            </h3>
-            <p class="small text-uppercase fw-bold mt-1 mb-0" style="color: #F0E9DC; opacity: 0.8; letter-spacing: 0.5px;">
-              «Elige tu servicio, tu barbero y un horario libre»
-            </p>
+            <span class="t-badge mb-2">Barbería TAURUS</span>
+            <h1 class="h3 t-titulo m-0">Agendar cita</h1>
+            <p class="t-subtitulo mt-1 mb-0">«Selecciona tu servicio y a tu barbero de confianza»</p>
           </div>
 
           @if (mensajeExito()) {
-            <div class="alert d-flex align-items-center mb-3" role="status"
-                 style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 700;">
-              <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <div class="t-alerta t-alerta-ok" role="status">
+              <i class="bi bi-check-circle-fill fs-5" aria-hidden="true"></i>
               <div>{{ mensajeExito() }}</div>
             </div>
           }
-
           @if (mensajeError()) {
-            <div class="alert d-flex align-items-center mb-3" role="alert"
-                 style="background-color: #242424; color: #ff6b6b; border: 1px solid #ff6b6b; font-weight: 700;">
-              <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+            <div class="t-alerta t-alerta-error" role="alert">
+              <i class="bi bi-exclamation-triangle-fill fs-5" aria-hidden="true"></i>
               <div>{{ mensajeError() }}</div>
             </div>
           }
 
-          @if (!auth.usuario()) {
-            <div class="alert mb-3" role="note"
-                 style="background-color: #242424; color: #F0E9DC; border: 1px solid #C6A66B;">
-              Puedes consultar los horarios sin cuenta. Para confirmar tu reserva te pediremos
-              <a routerLink="/login" class="fw-bold" style="color: #C6A66B;">iniciar sesión</a> o
-              <a routerLink="/registro" class="fw-bold" style="color: #C6A66B;">registrarte</a>; tu selección se conservará.
-            </div>
-          }
-
-          <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
-            <!-- Servicio -->
+          <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()" novalidate>
             <div class="mb-3">
-              <label for="res-servicio" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Servicio</label>
-              <select id="res-servicio"
-                class="form-select form-select-lg border-secondary"
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
-                formControlName="servicioId"
-                [class.is-invalid]="reservaForm.controls.servicioId.touched && reservaForm.controls.servicioId.invalid">
-                <option value="" style="background-color: #1a1a1a;">-- Elige el servicio --</option>
+              <label for="reserva-servicio" class="form-label t-label">Servicio</label>
+              <select id="reserva-servicio" class="form-select form-select-lg t-input" formControlName="servicioId">
+                <option value="">-- Elige el servicio --</option>
                 @for (s of servicios(); track s.id) {
-                  <option [value]="s.id" style="background-color: #1a1a1a;">
-                    {{ s.nombre }} ({{ s.duracionMinutos }} min) - ${{ s.precio.toFixed(2) }}
-                  </option>
+                  <option [value]="s.id">{{ s.nombre }} ({{ s.duracionMinutos }} min) - ${{ s.precio.toFixed(2) }}</option>
                 }
               </select>
-              <div class="invalid-feedback text-danger fw-bold">Selecciona un servicio del catálogo.</div>
-            </div>
-
-            <!-- Barbero -->
-            <div class="mb-3">
-              <label for="res-barbero" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Barbero</label>
-              <select id="res-barbero"
-                class="form-select form-select-lg border-secondary"
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
-                formControlName="barberoId"
-                [class.is-invalid]="reservaForm.controls.barberoId.touched && reservaForm.controls.barberoId.invalid">
-                <option value="" style="background-color: #1a1a1a;">-- Selecciona a tu barbero --</option>
-                @for (b of barberos(); track b.id) {
-                  <option [value]="b.id" style="background-color: #1a1a1a;">{{ b.nombre }}</option>
-                }
-              </select>
-              <div class="invalid-feedback text-danger fw-bold">Selecciona a uno de nuestros barberos.</div>
-              @if (horarioBarbero()) {
-                <div class="form-text" style="color: #F0E9DC; opacity: 0.8;">Atiende: {{ horarioBarbero() }}</div>
+              @if (campoInvalido('servicioId')) {
+                <div class="t-error">Selecciona un servicio del catálogo.</div>
               }
             </div>
 
-            <!-- Fecha -->
             <div class="mb-3">
-              <label for="res-fecha" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Fecha</label>
-              <input id="res-fecha" type="date"
-                class="form-control form-control-lg border-secondary"
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
-                formControlName="fecha"
-                [min]="fechaMinima"
-                [class.is-invalid]="reservaForm.controls.fecha.touched && reservaForm.controls.fecha.invalid">
-              <div class="invalid-feedback text-danger fw-bold">Selecciona una fecha de atención.</div>
-            </div>
-
-            <!-- Hora (solo horarios libres) -->
-            <div class="mb-4">
-              <label for="res-hora" class="form-label text-uppercase fw-bold" style="color: #C6A66B; font-size: 0.85rem; letter-spacing: 1px;">Hora disponible</label>
-              <select id="res-hora"
-                class="form-select form-select-lg border-secondary"
-                style="background-color: #0b0b0b; border: 1px solid #C6A66B !important; color: #F0E9DC;"
-                formControlName="hora"
-                [class.is-invalid]="reservaForm.controls.hora.touched && reservaForm.controls.hora.invalid">
-                <option value="" style="background-color: #1a1a1a;">-- Elige una hora --</option>
-                @for (h of horas(); track h) {
-                  <option [value]="h" style="background-color: #1a1a1a;">{{ h }}</option>
+              <label for="reserva-barbero" class="form-label t-label">Barbero de confianza</label>
+              <select id="reserva-barbero" class="form-select form-select-lg t-input" formControlName="barberoId">
+                <option value="">-- Selecciona al pana que te atenderá --</option>
+                @for (b of barberos(); track b.id) {
+                  <option [value]="b.id">{{ b.nombre }}</option>
                 }
               </select>
-              <div class="invalid-feedback text-danger fw-bold">Selecciona una hora disponible.</div>
+              @if (campoInvalido('barberoId')) {
+                <div class="t-error">Selecciona a uno de nuestros barberos.</div>
+              }
+            </div>
 
-              <div class="form-text" style="color: #F0E9DC; opacity: 0.8;" aria-live="polite">
-                @if (cargandoHoras()) {
-                  Buscando horarios disponibles...
-                } @else if (horasCargadas() && horas().length === 0) {
-                  No hay horarios disponibles ese día. Prueba otra fecha u otro barbero.
-                } @else if (horasCargadas()) {
-                  {{ horas().length }} horarios disponibles.
-                } @else {
-                  Elige servicio, barbero y fecha para ver las horas libres.
+            <div class="mb-3">
+              <label for="reserva-fecha" class="form-label t-label">Fecha</label>
+              <input id="reserva-fecha" type="date" class="form-control form-control-lg t-input"
+                     [min]="fechaMinima" formControlName="fecha">
+              @if (campoInvalido('fecha')) {
+                <div class="t-error">
+                  @if (reservaForm.controls.fecha.hasError('fechaPasada')) {
+                    La fecha no puede ser anterior a hoy.
+                  } @else {
+                    Selecciona una fecha de atención.
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mb-4">
+              <label for="reserva-hora" class="form-label t-label">Hora disponible</label>
+              <select id="reserva-hora" class="form-select form-select-lg t-input" formControlName="hora">
+                <option value="">-- Elige la hora --</option>
+                @for (h of horas(); track h) {
+                  <option [value]="h">{{ h }}</option>
                 }
-              </div>
+              </select>
+              @if (buscandoHoras()) {
+                <div class="small t-marfil mt-1" role="status">Buscando horarios libres...</div>
+              } @else if (listoParaBuscar && horas().length === 0) {
+                <div class="t-error" role="status">No hay horarios libres para esa combinación (la barbería no atiende los domingos). Prueba otro día u otro barbero.</div>
+              } @else if (campoInvalido('hora')) {
+                <div class="t-error">Elige una hora disponible.</div>
+              } @else if (!listoParaBuscar) {
+                <div class="small t-marfil opacity-75 mt-1">Elige servicio, barbero y fecha para ver las horas libres.</div>
+              }
             </div>
 
             <div class="d-grid gap-2">
-              <button type="submit" [disabled]="cargando()" class="btn btn-lg fw-black text-uppercase py-3"
-                      style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px;">
-                <i class="bi bi-calendar-check-fill me-2"></i>{{ cargando() ? 'PROCESANDO...' : (auth.usuario() ? 'CONFIRMAR RESERVA' : 'INICIAR SESIÓN PARA CONFIRMAR') }}
+              <button type="submit" [disabled]="cargando()" class="btn btn-lg btn-champagne text-uppercase py-3">
+                <i class="bi bi-calendar-check-fill me-2" aria-hidden="true"></i>{{ cargando() ? 'PROCESANDO...' : 'CONFIRMAR RESERVA' }}
               </button>
-              <a routerLink="/servicios" class="btn btn-outline-light text-uppercase fw-bold py-2" style="border: 1px solid #C6A66B; color: #C6A66B;">
-                CANCELAR Y VOLVER
-              </a>
+              <a routerLink="/servicios" class="btn btn-outline-champagne py-2">Cancelar y volver</a>
             </div>
           </form>
         </div>

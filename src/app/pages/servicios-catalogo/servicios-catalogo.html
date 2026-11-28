@@ -1,84 +1,69 @@
 <div class="container py-4">
-  <!-- Banner Principal de Barbería TAURUS -->
-  <div class="text-center my-4 py-4 px-3 rounded-3 shadow-lg" 
-       style="background: linear-gradient(180deg, #1f1f1f 0%, #111111 100%); border: 2px solid #C6A66B; box-shadow: 0 0 30px rgba(198, 166, 107, 0.25);">
-    
-    <span class="badge px-3 py-2 text-uppercase mb-2" style="background-color: #242424; color: #C6A66B; border: 1px solid #C6A66B; font-weight: 800; letter-spacing: 2px;">
-      URBAN LUXURY BARBERSHOP
-    </span>
-
-    <h1 class="fw-black display-3 text-uppercase mb-2" 
-        style="color: #C6A66B; font-weight: 900; text-shadow: 0 0 20px rgba(198, 166, 107, 0.6); letter-spacing: 3px;">
-      BARBERÍA TAURUS
-    </h1>
-
-    <h3 class="fw-black text-uppercase mb-2" style="color: #F0E9DC; font-weight: 800; letter-spacing: 1px;">
-      ¡AQUÍ SE VIENE A SALIR FINO!
-    </h3>
-
-    <p class="fs-5 text-uppercase fw-bold m-0 opacity-75" style="color: #F0E9DC; letter-spacing: 1px;">
-      «Tu próximo estilo comienza aquí, mi pana»
-    </p>
+  <div class="text-center my-4 py-4 px-3 t-banner">
+    <span class="t-badge mb-2">Urban Luxury Barbershop</span>
+    <h1 class="display-3 t-titulo mb-2" style="letter-spacing: 3px;">BARBERÍA TAURUS</h1>
+    <h2 class="h3 t-marfil text-uppercase fw-bold mb-2">¡Aquí se viene a salir fino!</h2>
+    <p class="fs-5 text-uppercase fw-bold m-0 t-marfil opacity-75">«Tu próximo estilo comienza aquí, mi pana»</p>
   </div>
 
-  <!-- Encabezado de Catálogo -->
   <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary pb-2">
-    <h3 class="fw-black text-uppercase m-0" style="color: #C6A66B; font-weight: 800; letter-spacing: 1px;">
-      <i class="bi bi-scissors me-2"></i>CATÁLOGO DE SERVICIOS
-    </h3>
-    <span class="badge rounded-pill px-3 py-2" style="background-color: #242424; color: #F0E9DC; border: 1px solid #C6A66B;">FASE 1 - FIRESTORE</span>
+    <h2 id="titulo-catalogo" class="h3 t-titulo m-0"><i class="bi bi-scissors me-2" aria-hidden="true"></i>Catálogo de servicios</h2>
   </div>
 
-  <!-- Spinner de Carga -->
-  <div *ngIf="cargando" class="text-center py-5">
-    <div class="spinner-border text-warning" role="status">
-      <span class="visually-hidden">Cargando catálogo...</span>
-    </div>
-  </div>
+  @if (error()) {
+    <div class="t-alerta t-alerta-error" role="alert">{{ error() }}</div>
+  }
 
-  <!-- Lista de Servicios desde Firestore -->
-  <div *ngIf="!cargando" class="row g-4 mb-5">
-    <div class="col-md-4" *ngFor="let servicio of servicios">
-      <div class="card h-100 p-2 shadow-lg" 
-           style="background-color: #1a1a1a; border: 2px solid #C6A66B; border-radius: 12px; transition: transform 0.3s ease, box-shadow 0.3s ease;" 
-           onmouseover="this.style.boxShadow='0 0 20px rgba(198, 166, 107, 0.5)'; this.style.transform='translateY(-5px)';" 
-           onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0)';">
-        <div class="card-body d-flex flex-column p-4">
-          <h5 class="card-title fw-black text-uppercase fs-4 mb-2" style="color: #C6A66B; font-weight: 900;">{{ servicio.nombre }}</h5>
-          <p class="card-text flex-grow-1 opacity-75 my-3" style="color: #F0E9DC; font-size: 0.95rem; line-height: 1.5;">{{ servicio.descripcion }}</p>
-          
-          <div class="d-flex justify-content-between align-items-center my-3 pt-3 border-top border-secondary">
-            <span class="badge px-3 py-2 text-uppercase" style="background-color: #111111; color: #F0E9DC; border: 1px solid #C6A66B; font-weight: 700;">
-              <i class="bi bi-clock me-1" style="color: #C6A66B;"></i>{{ servicio.duracionMinutos }} MIN
-            </span>
-            <span class="fs-3 fw-black" style="color: #C6A66B; font-weight: 900; text-shadow: 0 0 8px rgba(198,166,107,0.4);">${{ servicio.precio.toFixed(2) }}</span>
-          </div>
-
-          <!-- Botón de Reserva enviando el id real del servicio -->
-          <a [routerLink]="['/reservar']" [queryParams]="{ servicioId: servicio.id }" 
-             class="btn btn-lg w-100 fw-black text-uppercase py-2" 
-             style="background: linear-gradient(135deg, #d4af37 0%, #C6A66B 100%); color: #111111; border: none; font-weight: 900; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(198,166,107,0.3);">
-            <i class="bi bi-calendar-check-fill me-2"></i>RESERVAR ESTE SERVICIO
-          </a>
-        </div>
+  @if (cargando()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-warning" role="status">
+        <span class="visually-hidden">Cargando catálogo...</span>
       </div>
     </div>
-  </div>
+  } @else {
+    @if (servicios().length === 0 && !error()) {
+      <p class="t-alerta t-alerta-ok" role="status">Por ahora no hay servicios disponibles.</p>
+    }
 
-  <!-- Sección de Barberos Oficiales -->
-  <div class="mt-5 pt-3" *ngIf="!cargando">
-    <h3 class="fw-black text-uppercase mb-4" style="color: #C6A66B; font-weight: 800; letter-spacing: 1px;">
-      <i class="bi bi-fire me-2"></i>BARBEROS DE LA CASA
-    </h3>
-    <div class="row g-3">
-      <div class="col-md-3" *ngFor="let barbero of barberos">
-        <div class="card text-center p-3 shadow" style="background-color: #242424; border: 1px solid rgba(198, 166, 107, 0.4); border-radius: 10px;">
-          <div class="card-body">
-            <i class="bi bi-person-badge-fill display-4 d-block mb-2" style="color: #C6A66B; text-shadow: 0 0 10px rgba(198,166,107,0.4);"></i>
-            <h5 class="fw-black text-uppercase mb-1" style="color: #F0E9DC; font-weight: 800;">{{ barbero.nombre }}</h5>
-          </div>
+    <section class="row g-4 mb-5" aria-labelledby="titulo-catalogo">
+      @for (servicio of servicios(); track servicio.id) {
+        <div class="col-md-4">
+          <article class="t-card t-card-hover h-100 p-2" [attr.aria-labelledby]="'servicio-' + servicio.id">
+            <div class="d-flex flex-column h-100 p-4">
+              <h3 class="h4 t-titulo mb-2" [id]="'servicio-' + servicio.id">{{ servicio.nombre }}</h3>
+              <p class="flex-grow-1 my-3 t-marfil opacity-75">{{ servicio.descripcion }}</p>
+
+              <div class="d-flex justify-content-between align-items-center my-3 pt-3 border-top border-secondary">
+                <span class="t-badge"><i class="bi bi-clock me-1" aria-hidden="true"></i>{{ servicio.duracionMinutos }} min</span>
+                <span class="fs-3 fw-bold t-dorado">${{ servicio.precio.toFixed(2) }}</span>
+              </div>
+
+              <!-- Botón de reserva: envía el id real del servicio -->
+              <a [routerLink]="['/reservar']" [queryParams]="{ servicioId: servicio.id }" class="btn btn-lg btn-champagne text-uppercase w-100 py-2"
+                 [attr.aria-label]="'Reservar el servicio ' + servicio.nombre">
+                <i class="bi bi-calendar-check-fill me-2" aria-hidden="true"></i>Reservar este servicio
+              </a>
+            </div>
+          </article>
         </div>
-      </div>
-    </div>
-  </div>
+      }
+    </section>
+
+    @if (barberos().length > 0) {
+      <h2 id="titulo-barberos" class="h3 t-titulo mb-4"><i class="bi bi-fire me-2" aria-hidden="true"></i>Barberos de la casa</h2>
+      <section class="row g-3" aria-labelledby="titulo-barberos">
+        @for (barbero of barberos(); track barbero.id) {
+          <div class="col-sm-6 col-lg-3">
+            <article class="t-card-suave text-center p-3 h-100">
+              <i class="bi bi-person-badge-fill display-4 d-block mb-2 t-dorado" aria-hidden="true"></i>
+              <h3 class="h5 t-marfil text-uppercase fw-bold mb-1">{{ barbero.nombre }}</h3>
+              @if (barbero.horaInicio && barbero.horaFin) {
+                <p class="small m-0 t-marfil opacity-75">Atiende de {{ barbero.horaInicio }} a {{ barbero.horaFin }}</p>
+              }
+            </article>
+          </div>
+        }
+      </section>
+    }
+  }
 </div>

@@ -1,22 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { NavbarComponent } from './navbar';
 
-import { Navbar } from './navbar';
-
-describe('Navbar', () => {
-  let component: Navbar;
-  let fixture: ComponentFixture<Navbar>;
+describe('NavbarComponent', () => {
+  let component: NavbarComponent;
+  let fixture: ComponentFixture<NavbarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Navbar],
+      imports: [NavbarComponent],
+      providers: [provideRouter([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Navbar);
+    fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('se crea correctamente', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('el botón del menú abre y cierra el menú en móvil', () => {
+    expect(component.menuAbierto).toBe(false);
+    component.toggleMenu();
+    expect(component.menuAbierto).toBe(true);
+    component.cerrarMenu();
+    expect(component.menuAbierto).toBe(false);
   });
 });
